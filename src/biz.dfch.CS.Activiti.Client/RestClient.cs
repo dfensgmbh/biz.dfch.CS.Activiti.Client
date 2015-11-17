@@ -25,6 +25,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Web;
 
 namespace biz.dfch.CS.Activiti.Client
 {
@@ -132,9 +135,28 @@ namespace biz.dfch.CS.Activiti.Client
         public void Login()
         {
             string uri = String.Format("identity/users/{0}", HttpUtility.UrlEncode(Username));
-            string login = Invoke(uri);
+            string response = Invoke(uri);
         }
+
+
+        public string GetProcessInstances()
+        {
+            string uri = String.Format("runtime/process-instances");
+            string response = Invoke(uri);
+
+            dynamic jworkflows = JsonConvert.DeserializeObject(response);
+            return response;
         }
+
+        public string GetTasks()
+        {
+            string uri = String.Format("runtime/tasks");
+            string response = Invoke(uri);
+
+            dynamic jtasks = JsonConvert.DeserializeObject(response);
+            return response;
+        }
+
 
         #endregion
 

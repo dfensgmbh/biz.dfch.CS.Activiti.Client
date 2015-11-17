@@ -70,5 +70,25 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             Assert.AreEqual(username, restClient.Username);
             //Assert.AreEqual(password, restClient.Password);
         }
+
+        [TestMethod]
+        public void CurrentlyDeveloping()
+        {
+            // Arrange
+            var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
+            var username = "kermit";
+            var password = "kermit";
+
+            // Act
+            var restClient = new RestClient(serveruri, username, password);
+            var tasks = restClient.GetTasks();
+
+            // Assert
+            Assert.IsNotNull(restClient);
+            Assert.AreEqual(serveruri, restClient.UriServer);
+            Assert.AreEqual(username, restClient.Username);
+            //Assert.AreEqual(password, restClient.Password);
+        }
+
     }
 }
