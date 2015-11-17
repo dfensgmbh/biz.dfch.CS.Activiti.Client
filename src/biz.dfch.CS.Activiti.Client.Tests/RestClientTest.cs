@@ -44,7 +44,6 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             
             // Act
             var restClient = new RestClient(serveruri, username, password);
-            restClient.Login();
             
             // Assert
             Assert.IsNotNull(restClient);
@@ -63,7 +62,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
             // Act
             var restClient = new RestClient(serveruri, username, password);
-            var user = restClient.Login();
+            restClient.Login();
 
             // Assert
             Assert.IsNotNull(restClient);

@@ -129,10 +129,11 @@ namespace biz.dfch.CS.Activiti.Client
         #endregion
 
         #region Functional Methods
-        public String Login()
+        public void Login()
         {
-            string uri = String.Format("identity/users/{0}", Username);
-            return Invoke(uri);
+            string uri = String.Format("identity/users/{0}", HttpUtility.UrlEncode(Username));
+            string login = Invoke(uri);
+        }
         }
 
         #endregion
