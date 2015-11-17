@@ -15,9 +15,14 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,9 +30,13 @@ namespace biz.dfch.CS.Activiti.Client
 {
     public class RestClient
     {
+        #region Constants and Properties
         // DFTODO - define properties such as Username, Password, Server, ...
-
-        public Uri Server { get; set; }
+        //private const String URIBASE = "activiti-rest";
+        private const int TIMEOUTSEC = 90;
+        private const String CONTENTTYPE = "application/json";
+        private const String AUTHORIZATIONHEADERFORMAT = "Basic {0}";
+        private const String USERAGENT = "d-fens biz.dfch.CS.Activiti.Client.RestClient";
 
         public string Username { get; set; }
 
@@ -44,6 +53,55 @@ namespace biz.dfch.CS.Activiti.Client
             }
         }
 
+        private NetworkCredential _Credential;
+        private String _CredentialBase64;
+        public NetworkCredential Credential
+        {
+            get
+            {
+                return _Credential;
+            }
+            set
+            {
+                _Credential = value ?? (new NetworkCredential(String.Empty, String.Empty));
+                var abCredential = System.Text.UTF8Encoding.UTF8.GetBytes(String.Format("{0}:{1}", _Credential.UserName, _Credential.Password));
+                _CredentialBase64 = Convert.ToBase64String(abCredential);
+            }
+        }
+        public void SetCredential(String username, String password)
+        {
+            this.Credential = new NetworkCredential(username, password);
+        }
+
+        private String _ContentType = CONTENTTYPE;
+        public String ContentType
+        {
+            get { return _ContentType; }
+            set { _ContentType = value; }
+        }
+        private Uri _UriServer;
+        public Uri UriServer
+        {
+            get { return _UriServer; }
+            set { _UriServer = value; }
+        }
+
+        private int _TimeoutSec = TIMEOUTSEC;
+        public int TimeoutSec
+        {
+            get
+            {
+                return _TimeoutSec;
+            }
+            set
+            {
+                _TimeoutSec = value;
+            }
+        }
+
+        #endregion
+
+        #region Constructor And Initialisation
         public RestClient()
         {
             // N/A
@@ -55,10 +113,30 @@ namespace biz.dfch.CS.Activiti.Client
             Contract.Requires(!string.IsNullOrWhiteSpace(username));
             Contract.Requires(!string.IsNullOrWhiteSpace(password));
 
-            Server = server;
+            UriServer = server;
             Username = username;
             Password = password;
+            this.Initialise(UriServer, Username, Password);
         }
+
+        private void Initialise(Uri server, string username, string password)
+        {
+            this.UriServer = server;
+            this.Username = username;
+            this.Password = password;
+            SetCredential(Username, Password);
+        }
+        #endregion
+
+        #region Functional Methods
+        public String Login()
+        {
+            string uri = String.Format("identity/users/{0}", Username);
+            return Invoke(uri);
+        }
+
+        #endregion
+
         #region Invoke
         public String Invoke(
             String method
@@ -198,5 +276,6 @@ namespace biz.dfch.CS.Activiti.Client
             return this.Invoke(HttpMethod.Get.ToString(), uri, null, null, null);
         }
         #endregion
+
     }
 }
