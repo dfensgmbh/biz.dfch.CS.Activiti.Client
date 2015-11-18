@@ -86,13 +86,30 @@ namespace biz.dfch.CS.Activiti.Client
             Login();
         }
 
-        public string GetWorkflowDefinitions()
+        public T GetWorkflowDefinitions<T>()
         {
             var uri = string.Format("repository/process-definitions");
             var response = Client.Invoke(uri);
 
+            return (T)Convert.ChangeType(response, typeof(T));
+        }
+
+        public object GetWorkflowDefinitions()
+        {
+            var response = GetWorkflowDefinitions<string>();
             var jobject = JsonConvert.DeserializeObject<ProcessDefinitionsResponse>(response);
-            return response;
+            return jobject;
+        }
+
+        public object GetWorkflowDefinitions(Type type)
+        {
+            var mi = this.GetType().GetMethods().Where(m => (m.Name == "GetWorkflowDefinitions" && m.IsGenericMethod)).First();
+            Contract.Assert(null != mi, "No generic method type found.");
+            var genericMethod = mi.MakeGenericMethod(type);
+            Contract.Assert(null != genericMethod, "Cannot create generic method.");
+
+            var result = genericMethod.Invoke(this, new object[] {/*parameters*/});
+            return result;
         }
 
         public string GetWorkflowInstances()
