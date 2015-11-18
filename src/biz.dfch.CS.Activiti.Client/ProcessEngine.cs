@@ -44,6 +44,7 @@ namespace biz.dfch.CS.Activiti.Client
                 _Client = value;
             }
         }
+        public string AppName { get; set; }
 
         #endregion
 
@@ -148,12 +149,20 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public object InvokeWorkflowInstance(string definitionId)
+        public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariables> variables)
         {
             var uri = string.Format("runtime/process-instances");
-            var response = Client.Invoke(uri);
+            var request = new ProcessInstanceRequest() 
+            { 
+                processDefinitionId=definitionId,
+                businessKey=AppName
+            };
+            request.variables = variables;
+            var jrequest = JsonConvert.SerializeObject(request);
 
-            var result = JsonConvert.DeserializeObject<ProcessInstancesResponse>(response);
+            Debug.WriteLine(string.Format("{0} Body {1}", "POST", jrequest));
+            var response = Client.Invoke("POST", uri, null, null, jrequest);
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
         }
 
