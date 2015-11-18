@@ -105,15 +105,14 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Act
             var processEngine = new ProcessEngine(serveruri, username, password);
             processEngine.Login(username, password);
-            var wdefStr = processEngine.GetWorkflowDefinitions(Type.GetType("System.String"));
-            var wdefObj = processEngine.GetWorkflowDefinitions();
+            var wdefObj1 = processEngine.GetWorkflowDefinitions<ProcessDefinitionsResponse>();
+            var wdefObj2 = processEngine.GetWorkflowDefinitions();
 
             // Assert
             Assert.IsNotNull(processEngine);
             Assert.AreEqual(serveruri, processEngine.Client.UriServer);
             Assert.AreEqual(username, processEngine.Client.Username);
-            Assert.IsNotNull(wdefObj);
-            Assert.IsNotNull(wdefStr);
+            Assert.IsNotNull(wdefObj1);
         }
 
     }

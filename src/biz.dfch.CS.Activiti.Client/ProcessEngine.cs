@@ -98,15 +98,7 @@ namespace biz.dfch.CS.Activiti.Client
             var uri = string.Format("repository/process-definitions");
             var response = Client.Invoke(uri);
 
-            var result = (T)Convert.ChangeType(response, typeof(T));
-            return result;
-        }
-
-        public object GetWorkflowDefinitions()
-        {
-            var response = GetWorkflowDefinitions<string>();
-
-            var result = JsonConvert.DeserializeObject<ProcessDefinitionsResponse>(response);
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
         }
 
@@ -118,6 +110,23 @@ namespace biz.dfch.CS.Activiti.Client
             Contract.Assert(null != genericMethod, "Cannot create generic method.");
 
             var result = genericMethod.Invoke(this, new object[] {/*parameters*/});
+            return result;
+        }
+        
+        public object GetWorkflowDefinitions(object type)
+        {
+            var mi = this.GetType().GetMethods().Where(m => (m.Name == "GetWorkflowDefinitions" && m.IsGenericMethod)).First();
+            Contract.Assert(null != mi, "No generic method type found.");
+            var genericMethod = mi.MakeGenericMethod(type.GetType());
+            Contract.Assert(null != genericMethod, "Cannot create generic method.");
+
+            var result = genericMethod.Invoke(this, new object[] {/*parameters*/});
+            return result;
+        }
+
+        public object GetWorkflowDefinitions()
+        {
+            var result = GetWorkflowDefinitions<ProcessDefinitionsResponse>();
             return result;
         }
 
