@@ -238,14 +238,11 @@ namespace biz.dfch.CS.Activiti.Client
                     var contentError = response.Content.ReadAsStringAsync().Result;
                     try
                     {
-                        /*
                         JToken jv = JObject.Parse(contentError);
                         var messageError = jv.SelectToken("Error", true).ToString();
                         var messageCode = jv.SelectToken("code", true).ToString();
                         var messageText = jv.SelectToken("text", true).ToString();
                         message = String.Format("{0}\r\nCode: {1}\r\nText: {2}", messageError, messageCode, messageText);
-                         * */
-                        message = contentError;
                     }
                     catch
                     {
