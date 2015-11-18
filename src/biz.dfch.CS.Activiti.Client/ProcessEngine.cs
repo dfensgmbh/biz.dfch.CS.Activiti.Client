@@ -91,14 +91,16 @@ namespace biz.dfch.CS.Activiti.Client
             var uri = string.Format("repository/process-definitions");
             var response = Client.Invoke(uri);
 
-            return (T)Convert.ChangeType(response, typeof(T));
+            var result = (T)Convert.ChangeType(response, typeof(T));
+            return result;
         }
 
         public object GetWorkflowDefinitions()
         {
             var response = GetWorkflowDefinitions<string>();
-            var jobject = JsonConvert.DeserializeObject<ProcessDefinitionsResponse>(response);
-            return jobject;
+
+            var result = JsonConvert.DeserializeObject<ProcessDefinitionsResponse>(response);
+            return result;
         }
 
         public object GetWorkflowDefinitions(Type type)
@@ -112,13 +114,13 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public string GetWorkflowInstances()
+        public object GetWorkflowInstances()
         {
             var uri = string.Format("runtime/process-instances");
             var response = Client.Invoke(uri);
 
-            var jobject = JsonConvert.DeserializeObject<ProcessInstancesResponse>(response);            
-            return response;
+            var result = JsonConvert.DeserializeObject<ProcessInstancesResponse>(response);
+            return result;
         }
 
         /*

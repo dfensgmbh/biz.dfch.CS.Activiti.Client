@@ -95,7 +95,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         }
 
         [TestMethod]
-        public void CurrentlyDeveloping()
+        public void GetWorkflowDefinitions()
         {
             // Arrange
             var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
@@ -106,6 +106,27 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             var processEngine = new ProcessEngine(serveruri, username, password);
             processEngine.Login(username, password);
             var wdefStr = processEngine.GetWorkflowDefinitions(Type.GetType("System.String"));
+            var wdefObj = processEngine.GetWorkflowDefinitions();
+
+            // Assert
+            Assert.IsNotNull(processEngine);
+            Assert.AreEqual(serveruri, processEngine.Client.UriServer);
+            Assert.AreEqual(username, processEngine.Client.Username);
+            Assert.IsNotNull(wdefObj);
+            Assert.IsNotNull(wdefStr);
+        }
+
+        [TestMethod]
+        public void CurrentlyDeveloping()
+        {
+            // Arrange
+            var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
+            var username = "kermit";
+            var password = "kermit";
+
+            // Act
+            var processEngine = new ProcessEngine(serveruri, username, password);
+            processEngine.Login(username, password);
             var wdefObj = processEngine.GetWorkflowDefinitions();
 
             //var test2 = processEngine.GetWorkflowInstances();
