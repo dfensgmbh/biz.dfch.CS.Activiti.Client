@@ -45,6 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProcessVariables.cs" />
+    <Compile Include="ProcessInstancesResponse.cs" />
+    <Compile Include="ProcessEngine.cs" />
+    <Compile Include="ProcessDefinitionsResponse.cs" />
     <Compile Include="RestClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
