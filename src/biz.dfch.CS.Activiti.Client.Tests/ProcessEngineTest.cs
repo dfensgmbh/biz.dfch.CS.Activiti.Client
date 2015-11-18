@@ -116,27 +116,5 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             Assert.IsNotNull(wdefStr);
         }
 
-        [TestMethod]
-        public void CurrentlyDeveloping()
-        {
-            // Arrange
-            var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
-            var username = "kermit";
-            var password = "kermit";
-
-            // Act
-            var processEngine = new ProcessEngine(serveruri, username, password);
-            processEngine.Login(username, password);
-            var wdefObj = processEngine.GetWorkflowDefinitions();
-
-            //var test2 = processEngine.GetWorkflowInstances();
-
-            // Assert
-            Assert.IsNotNull(processEngine);
-            Assert.AreEqual(serveruri, processEngine.Client.UriServer);
-            Assert.AreEqual(username, processEngine.Client.Username);
-            //Assert.AreEqual(password, restClient.Password);
-        }
-
     }
 }

@@ -86,6 +86,13 @@ namespace biz.dfch.CS.Activiti.Client
             Login();
         }
 
+        public void Logout()
+        {
+            Client.Credential = new NetworkCredential(String.Empty, String.Empty);
+            Client.Username = null;
+            Client.Password = null;
+        }
+
         public T GetWorkflowDefinitions<T>()
         {
             var uri = string.Format("repository/process-definitions");
@@ -123,19 +130,31 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        /*
-        public string GetTasks()
+        public object GetWorkflowInstance(string id)
         {
-            var uri = string.Format("runtime/tasks");
+            var uri = string.Format("runtime/process-instances/{0}", id);
             var response = Client.Invoke(uri);
 
-            return response;
+            var result = JsonConvert.DeserializeObject<ProcessInstancesResponse>(response);
+            return result;
         }
-         */
 
-        public String Invoke()
+        public object InvokeWorkflowInstance(string definitionId)
         {
-            return "";
+            var uri = string.Format("runtime/process-instances");
+            var response = Client.Invoke(uri);
+
+            var result = JsonConvert.DeserializeObject<ProcessInstancesResponse>(response);
+            return result;
+        }
+
+        public object UpdateWorkflowInstance(string id)
+        {
+            var uri = string.Format("runtime/process-instances/{0}", id);
+            var response = Client.Invoke(uri);
+
+            var result = JsonConvert.DeserializeObject<ProcessInstancesResponse>(response);
+            return result;
         }
 
         #endregion
