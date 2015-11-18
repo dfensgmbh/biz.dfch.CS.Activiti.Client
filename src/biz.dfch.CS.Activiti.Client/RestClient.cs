@@ -28,6 +28,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Web;
+//using biz.dfch.CS.Utilities.Rest;
+//using HttpMethod = biz.dfch.CS.Utilities.Rest.HttpMethod;
 
 namespace biz.dfch.CS.Activiti.Client
 {
@@ -110,15 +112,22 @@ namespace biz.dfch.CS.Activiti.Client
             // N/A
         }
 
+        public RestClient(Uri server)
+        {
+            Contract.Requires(null != server);
+
+            this.UriServer = server;            
+        }
+
         public RestClient(Uri server, string username, string password)
         {
             Contract.Requires(null != server);
             Contract.Requires(!string.IsNullOrWhiteSpace(username));
             Contract.Requires(!string.IsNullOrWhiteSpace(password));
 
-            UriServer = server;
-            Username = username;
-            Password = password;
+            this.UriServer = server;
+            this.Username = username;
+            this.Password = password;
             this.Initialise(UriServer, Username, Password);
         }
 
@@ -129,35 +138,6 @@ namespace biz.dfch.CS.Activiti.Client
             this.Password = password;
             SetCredential(Username, Password);
         }
-        #endregion
-
-        #region Functional Methods
-        public void Login()
-        {
-            string uri = String.Format("identity/users/{0}", HttpUtility.UrlEncode(Username));
-            string response = Invoke(uri);
-        }
-
-
-        public string GetProcessInstances()
-        {
-            string uri = String.Format("runtime/process-instances");
-            string response = Invoke(uri);
-
-            dynamic jworkflows = JsonConvert.DeserializeObject(response);
-            return response;
-        }
-
-        public string GetTasks()
-        {
-            string uri = String.Format("runtime/tasks");
-            string response = Invoke(uri);
-
-            dynamic jtasks = JsonConvert.DeserializeObject(response);
-            return response;
-        }
-
-
         #endregion
 
         #region Invoke
