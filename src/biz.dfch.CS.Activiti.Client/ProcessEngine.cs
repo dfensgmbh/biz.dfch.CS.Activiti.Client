@@ -38,10 +38,19 @@ namespace biz.dfch.CS.Activiti.Client
             Suspend,
             Activate
         }
+
         public enum EnumIndepth
         {
             Executions,
             Tasks
+        }
+
+        public string ApplicationName
+        {
+            get
+            {
+                return _ApplicationName;
+            }
         }
 
         #endregion
@@ -79,7 +88,7 @@ namespace biz.dfch.CS.Activiti.Client
             if (_IsLoggedIn) return;
 
             _Client.Credential = credential;
-            var uri = string.Format("identity/users/{0}", HttpUtility.UrlEncode(credential.UserName));            
+            var uri = string.Format("identity/users/{0}", HttpUtility.UrlEncode(credential.UserName));
             var response = _Client.Invoke(uri);
 
             _IsLoggedIn = true;
