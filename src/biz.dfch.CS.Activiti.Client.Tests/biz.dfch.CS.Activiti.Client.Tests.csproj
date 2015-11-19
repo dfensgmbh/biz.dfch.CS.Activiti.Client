@@ -54,7 +54,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ProcessEngineTest.cs" />
-    <Compile Include="RestClientTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

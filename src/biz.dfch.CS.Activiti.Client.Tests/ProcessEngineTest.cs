@@ -22,97 +22,129 @@ namespace biz.dfch.CS.Activiti.Client.Tests
     [TestClass]
     public class ProcessEngineTest
     {
-        [TestMethod]
-        public void CreatingProcessEngineWithParameterlessConstructorSucceeds()
+
+        protected Uri serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
+        protected string applicationName = "";
+        protected string username = "kermit";
+        protected string password = "kermit";
+        protected ProcessEngine _ProcessEngine = null;
+
+        [TestInitialize]
+        public void TestInitialize()
         {
-            // Arrange
+            _ProcessEngine = new ProcessEngine(serveruri, applicationName);
+        }
 
-            // Act
-            var processEngine = new ProcessEngine();
-
-            // Assert
-            Assert.IsNotNull(processEngine);
-
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            
         }
 
         [TestMethod]
-        public void CreatingProcessEngineWithParamterisedSucceeds()
+        public void LoginWithWrongUsernameAndPassword()
         {
-            // Arrange
-            var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
-            var username = "kermit";
-            var password = "kermit";
-
-            // Act
-            var processEngine = new ProcessEngine(serveruri, username, password);
-
-            // Assert
-            Assert.IsNotNull(processEngine);
-            Assert.AreEqual(serveruri, processEngine.Client.UriServer);
-            Assert.AreEqual(username, processEngine.Client.Username);
-            //Assert.AreEqual(password, restClient.Password);
+            this._ProcessEngine.Login("wrongusername", "1234");
+            Assert.IsTrue(!this._ProcessEngine.IsLoggedIn);
         }
+
 
         [TestMethod]
-        public void CreatingProcessEngineWithClientSucceeds()
+        public void Login()
         {
-            // Arrange
-            var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
-            var username = "kermit";
-            var password = "kermit";
-
-            // Act
-            var restClient = new RestClient(serveruri, username, password);
-            var processEngine = new ProcessEngine(restClient);
-            processEngine.Login();
-
-            // Assert
-            Assert.IsNotNull(restClient);
-            Assert.IsNotNull(processEngine);
-            Assert.AreEqual(serveruri, restClient.UriServer);
-            Assert.AreEqual(username, restClient.Username);
-            Assert.AreEqual(username, processEngine.Client.Username);
-            //Assert.AreEqual(password, restClient.Password);
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn);
         }
 
-        [TestMethod]
-        public void CreatingProcessEngineAndLoginSucceeds()
-        {
-            // Arrange
-            var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
-            var username = "kermit";
-            var password = "kermit";
 
-            // Act
-            var processEngine = new ProcessEngine(serveruri, username, password);
-            processEngine.Login(username, password);
 
-            // Assert
-            Assert.IsNotNull(processEngine);
-            Assert.AreEqual(serveruri, processEngine.Client.UriServer);
-            Assert.AreEqual(username, processEngine.Client.Username);
-            //Assert.AreEqual(password, restClient.Password);
-        }
+        //[TestMethod]
+        //public void CreatingProcessEngineWithParameterlessConstructorSucceeds()
+        //{
+        //    // Arrange
+
+        //    // Act
+        //    var processEngine = new ProcessEngine();
+
+        //    // Assert
+        //    Assert.IsNotNull(processEngine);
+
+        //}
+
+        //[TestMethod]
+        //public void CreatingProcessEngineWithParamterisedSucceeds()
+        //{
+        //    // Arrange
+        //    var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
+        //    var username = "kermit";
+        //    var password = "kermit";
+
+        //    // Act
+        //    var processEngine = new ProcessEngine(serveruri, username, password);
+
+        //    // Assert
+        //    Assert.IsNotNull(processEngine);
+        //    Assert.AreEqual(serveruri, processEngine.Client.UriServer);
+        //    Assert.AreEqual(username, processEngine.Client.Username);
+        //    //Assert.AreEqual(password, restClient.Password);
+        //}
+
+        //[TestMethod]
+        //public void CreatingProcessEngineWithClientSucceeds()
+        //{
+        //    // Arrange
+        //    var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
+        //    var username = "kermit";
+        //    var password = "kermit";
+
+        //    // Act
+        //    var restClient = new RestClient(serveruri, username, password);
+        //    var processEngine = new ProcessEngine(restClient);
+        //    processEngine.Login();
+
+        //    // Assert
+        //    Assert.IsNotNull(restClient);
+        //    Assert.IsNotNull(processEngine);
+        //    Assert.AreEqual(serveruri, restClient.UriServer);
+        //    Assert.AreEqual(username, restClient.Username);
+        //    Assert.AreEqual(username, processEngine.Client.Username);
+        //    //Assert.AreEqual(password, restClient.Password);
+        //}
+
+        //[TestMethod]
+        //public void CreatingProcessEngineAndLoginSucceeds()
+        //{
+        //    // Arrange
+        //    var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
+        //    var username = "kermit";
+        //    var password = "kermit";
+
+        //    // Act
+        //    var processEngine = new ProcessEngine(serveruri, username, password);
+        //    processEngine.Login(username, password);
+
+        //    // Assert
+        //    Assert.IsNotNull(processEngine);
+        //    Assert.AreEqual(serveruri, processEngine.Client.UriServer);
+        //    Assert.AreEqual(username, processEngine.Client.Username);
+        //    //Assert.AreEqual(password, restClient.Password);
+        //}
 
         [TestMethod]
         public void GetWorkflowDefinitions()
         {
             // Arrange
-            var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
-            var username = "kermit";
-            var password = "kermit";
+           
 
             // Act
-            var processEngine = new ProcessEngine(serveruri, username, password);
-            processEngine.Login(username, password);
-            var wdefObj1 = processEngine.GetWorkflowDefinitions<ProcessDefinitionsResponse>();
-            var wdefObj2 = processEngine.GetWorkflowDefinitions();
+           this._ProcessEngine.Login(username, password);
+           Assert.IsTrue(this._ProcessEngine.IsLoggedIn);
+           var wdefObj1 = this._ProcessEngine.GetWorkflowDefinitions<ProcessDefinitionsResponse>();
+           var wdefObj2 = this._ProcessEngine.GetWorkflowDefinitions();
 
             // Assert
-            Assert.IsNotNull(processEngine);
-            Assert.AreEqual(serveruri, processEngine.Client.UriServer);
-            Assert.AreEqual(username, processEngine.Client.Username);
             Assert.IsNotNull(wdefObj1);
+            Assert.IsNotNull(wdefObj2);
         }
 
     }

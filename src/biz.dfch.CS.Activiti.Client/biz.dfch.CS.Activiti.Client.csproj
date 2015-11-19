@@ -90,6 +90,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContractClassForIBPMService.cs" />
+    <Compile Include="IBPMService.cs" />
     <Compile Include="ProcessTaskResponseData.cs" />
     <Compile Include="ProcessTasksResponse.cs" />
     <Compile Include="ProcessExecutionsResponse.cs" />

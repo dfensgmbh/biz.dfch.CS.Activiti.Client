@@ -29,22 +29,10 @@ using System.Net;
 
 namespace biz.dfch.CS.Activiti.Client
 {
-    public class ProcessEngine
+    public class ProcessEngine : ContractClassForIBPMService
     {
         #region Constants and Properties
-        private RestClient _Client;
-        public RestClient Client
-        {
-            get
-            {
-                return _Client;
-            }
-            set
-            {
-                _Client = value;
-            }
-        }
-        public string ApplicationName { get; set; }
+
         public enum EnumStatus
         {
             Suspend,
@@ -59,56 +47,49 @@ namespace biz.dfch.CS.Activiti.Client
         #endregion
 
         #region Constructor And Initialisation
+
         public ProcessEngine()
+            : base()
         {
             // N/A
         }
 
-        public ProcessEngine(RestClient client)
+        public ProcessEngine(Uri server, string applicationName)
+            : base(server, applicationName)
         {
-            Client = client;
-        }
-
-        public ProcessEngine(Uri server, string username, string password)
-        {
-            Contract.Requires(server != null && username != null && password != null);
-
-            Client = new RestClient(server, username, password);
+            Contract.Requires(server != null);
         }
 
         #endregion
 
         #region Functional Methods
-        // Login and Logout
-        public void Login()
-        {
-            var uri = string.Format("identity/users/{0}", HttpUtility.UrlEncode(Client.Credential.UserName));
-            var response = Client.Invoke(uri);
-        }
 
         public void Login(string username, string password)
         {
-            Contract.Requires(username != null && password != null);
+            base.Login(username, password);
 
-            Client.Username = username;
-            Client.Password = password;
-            Client.SetCredential(username, password);
-            Login();
+            this.Login(new NetworkCredential(username, password));
+
         }
 
         public void Login(NetworkCredential credential)
         {
-            Contract.Requires(credential != null);
+            base.Login(credential);
 
-            Client.Credential = credential;
-            Login();
+            if (_IsLoggedIn) return;
+
+            var uri = string.Format("identity/users/{0}", HttpUtility.UrlEncode(_Client.Credential.UserName));
+            var response = _Client.Invoke(uri);
+
+            _IsLoggedIn = true;
+
         }
 
         public void Logout()
         {
-            Client.Credential = new NetworkCredential(String.Empty, String.Empty);
-            Client.Username = null;
-            Client.Password = null;
+            _Client.Credential = new NetworkCredential(String.Empty, String.Empty);
+
+            _IsLoggedIn = false;
         }
         // Login and Logout end
 
@@ -116,7 +97,7 @@ namespace biz.dfch.CS.Activiti.Client
         public T GetWorkflowDefinitions<T>()
         {
             var uri = string.Format("repository/process-definitions");
-            var response = Client.Invoke(uri);
+            var response = _Client.Invoke(uri);
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
@@ -134,7 +115,7 @@ namespace biz.dfch.CS.Activiti.Client
             var result = genericMethod.Invoke(this, new object[] {/*parameters*/});
             return result;
         }
-        
+
         public object GetWorkflowDefinitions(object type)
         {
             Contract.Requires(type != null);
@@ -159,7 +140,7 @@ namespace biz.dfch.CS.Activiti.Client
             Contract.Requires(definitionId != null);
 
             var uri = string.Format("repository/process-definitions/{0}", definitionId);
-            var response = Client.Invoke(uri);
+            var response = _Client.Invoke(uri);
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
@@ -181,13 +162,13 @@ namespace biz.dfch.CS.Activiti.Client
             var request = new ProcessInstanceRequestData()
             {
                 processDefinitionId = definitionId,
-                businessKey = ApplicationName
+                businessKey = _ApplicationName //  Contract.Requires(server != null);?
             };
             request.variables = variables;
             var jrequest = JsonConvert.SerializeObject(request);
 
             Debug.WriteLine(string.Format("Body: {0}", jrequest));
-            var response = Client.Invoke("POST", uri, null, null, jrequest);
+            var response = _Client.Invoke("POST", uri, null, null, jrequest);
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
         }
@@ -215,7 +196,7 @@ namespace biz.dfch.CS.Activiti.Client
         public T GetWorkflowInstances<T>()
         {
             var uri = string.Format("runtime/process-instances");
-            var response = Client.Invoke(uri);
+            var response = _Client.Invoke(uri);
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
@@ -232,7 +213,7 @@ namespace biz.dfch.CS.Activiti.Client
             Contract.Requires(id != null);
 
             var uri = string.Format("runtime/process-instances/{0}/variables", id);
-            var response = Client.Invoke(uri);
+            var response = _Client.Invoke(uri);
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
@@ -243,12 +224,12 @@ namespace biz.dfch.CS.Activiti.Client
             Contract.Requires(id != null);
 
             var uri = string.Format("runtime/process-instances/{0}", id);
-            var response = Client.Invoke(uri);
+            var response = _Client.Invoke(uri);
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
         }
-        
+
         public object GetWorkflowInstance(string id)
         {
             var result = GetWorkflowInstance<ProcessInstanceResponseData>(id);
@@ -278,7 +259,7 @@ namespace biz.dfch.CS.Activiti.Client
             var jrequest = JsonConvert.SerializeObject(request);
 
             Debug.WriteLine(string.Format("Body: {0}", jrequest));
-            var response = Client.Invoke("POST", uri, null, null, jrequest);
+            var response = _Client.Invoke("POST", uri, null, null, jrequest);
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
@@ -310,7 +291,7 @@ namespace biz.dfch.CS.Activiti.Client
             var jrequest = JsonConvert.SerializeObject(request);
 
             Debug.WriteLine(string.Format("Body: {0}", jrequest));
-            var response = Client.Invoke("PUT", uri, null, null, jrequest);
+            var response = _Client.Invoke("PUT", uri, null, null, jrequest);
 
             var result = JsonConvert.DeserializeObject<T>(response);
             return result;
@@ -330,7 +311,7 @@ namespace biz.dfch.CS.Activiti.Client
             Contract.Requires(id != null);
 
             var uri = string.Format("runtime/process-instances/{0}", id);
-            var response = Client.Invoke("DELETE", uri, null, null, null);
+            var response = _Client.Invoke("DELETE", uri, null, null, null);
         }
         // DeleteWorkflowInstance end
 
