@@ -44,7 +44,7 @@ namespace biz.dfch.CS.Activiti.Client
                 _Client = value;
             }
         }
-        public string AppName { get; set; }
+        public string ApplicationName { get; set; }
 
         #endregion
 
@@ -131,6 +131,39 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
+        public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables)
+        {
+            var uri = string.Format("runtime/process-instances");
+            var request = new ProcessInstanceRequestData()
+            {
+                processDefinitionId = definitionId,
+                businessKey = ApplicationName
+            };
+            request.variables = variables;
+            var jrequest = JsonConvert.SerializeObject(request);
+
+            Debug.WriteLine(string.Format("{0} Body {1}", "POST", jrequest));
+            var response = Client.Invoke("POST", uri, null, null, jrequest);
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
+            return result;
+        }
+
+        public object InvokeWorkflowInstance(string definitionId, Hashtable variablesHt)
+        {
+            var variables = new List<ProcessVariableData>();
+            foreach (DictionaryEntry variable in variablesHt)
+            {
+                variables.Add(new ProcessVariableData()
+                {
+                    name = variable.Key.ToString(),
+                    value = variable.Value.ToString()
+                }
+                );
+            }
+            var result = InvokeWorkflowInstance<ProcessInstanceResponseData>(definitionId, variables);
+            return result;
+        }
+
         public object GetWorkflowInstances()
         {
             var uri = string.Format("runtime/process-instances");
@@ -146,23 +179,6 @@ namespace biz.dfch.CS.Activiti.Client
             var response = Client.Invoke(uri);
 
             var result = JsonConvert.DeserializeObject<ProcessInstancesResponse>(response);
-            return result;
-        }
-
-        public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariables> variables)
-        {
-            var uri = string.Format("runtime/process-instances");
-            var request = new ProcessInstanceRequest() 
-            { 
-                processDefinitionId=definitionId,
-                businessKey=AppName
-            };
-            request.variables = variables;
-            var jrequest = JsonConvert.SerializeObject(request);
-
-            Debug.WriteLine(string.Format("{0} Body {1}", "POST", jrequest));
-            var response = Client.Invoke("POST", uri, null, null, jrequest);
-            var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
         }
 
