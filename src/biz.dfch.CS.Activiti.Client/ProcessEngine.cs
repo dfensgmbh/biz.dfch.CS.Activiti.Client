@@ -173,7 +173,7 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public GetWorkflowInstances()
+        public object GetWorkflowInstances()
         {
             var result = GetWorkflowInstances<ProcessInstancesResponse>();
             return result;
