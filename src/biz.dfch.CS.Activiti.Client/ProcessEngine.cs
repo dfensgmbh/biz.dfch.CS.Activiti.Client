@@ -47,8 +47,13 @@ namespace biz.dfch.CS.Activiti.Client
         public string ApplicationName { get; set; }
         public enum EnumStatus
         {
-            suspend,
-            activate
+            Suspend,
+            Activate
+        }
+        public enum EnumIndepths
+        {
+            Executions,
+            Tasks
         }
 
         #endregion
@@ -181,7 +186,7 @@ namespace biz.dfch.CS.Activiti.Client
             request.variables = variables;
             var jrequest = JsonConvert.SerializeObject(request);
 
-            Debug.WriteLine(string.Format("{0} Body {1}", "POST", jrequest));
+            Debug.WriteLine(string.Format("Body: {0}", jrequest));
             var response = Client.Invoke("POST", uri, null, null, jrequest);
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
@@ -247,10 +252,50 @@ namespace biz.dfch.CS.Activiti.Client
         public object GetWorkflowInstance(string id)
         {
             var result = GetWorkflowInstance<ProcessInstanceResponseData>(id);
+            return result;
+        }
+
+        public object GetWorkflowInstance(string id, bool indepth)
+        {
+            var result = GetWorkflowInstance<ProcessInstanceResponseIndepthData>(id);
             result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
+            var executions = GetWorkflowIndepths<ProcessExecutionsResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepths.Executions);
+            result.executions = executions.data;
+            var tasks = GetWorkflowIndepths<ProcessTasksResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepths.Tasks);
+            result.tasks = tasks.data;
             return result;
         }
         // GetWorkflowInstance(s) end
+
+        // GetWorkflow indepth informations...
+        public T GetWorkflowIndepths<T>(string instanceId, EnumIndepths indepths)
+        {
+            Contract.Requires(instanceId != null);
+
+            var uri = string.Format("query/{0}", indepths.ToString().ToLower());
+            var request = new Hashtable();
+            request.Add("processInstanceId", instanceId);
+            var jrequest = JsonConvert.SerializeObject(request);
+
+            Debug.WriteLine(string.Format("Body: {0}", jrequest));
+            var response = Client.Invoke("POST", uri, null, null, jrequest);
+
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
+            return result;
+        }
+
+        public object GetWorkflowExections(string instanceId)
+        {
+            var result = GetWorkflowIndepths<ProcessExecutionsResponse>(instanceId, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepths.Executions);
+            return result;
+        }
+
+        public object GetWorkflowTasks(string instanceId)
+        {
+            var result = GetWorkflowIndepths<ProcessTasksResponse>(instanceId, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepths.Tasks);
+            return result;
+        }
+        // GetWorkflow indepth informations end
 
         // UpdateWorkflowInstance
         public T UpdateWorkflowInstance<T>(string id, EnumStatus status)
@@ -260,11 +305,11 @@ namespace biz.dfch.CS.Activiti.Client
             var uri = string.Format("runtime/process-instances/{0}", id);
             var request = new ProcessInstanceRequestUpdateData()
             {
-                action = status.ToString()
+                action = status.ToString().ToLower()
             };
             var jrequest = JsonConvert.SerializeObject(request);
 
-            Debug.WriteLine(string.Format("{0} Body {1}", "POST", jrequest));
+            Debug.WriteLine(string.Format("Body: {0}", jrequest));
             var response = Client.Invoke("PUT", uri, null, null, jrequest);
 
             var result = JsonConvert.DeserializeObject<T>(response);

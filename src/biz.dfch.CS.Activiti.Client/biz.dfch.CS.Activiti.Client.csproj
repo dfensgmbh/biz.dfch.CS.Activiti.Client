@@ -90,9 +90,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProcessTaskResponseData.cs" />
+    <Compile Include="ProcessTasksResponse.cs" />
+    <Compile Include="ProcessExecutionsResponse.cs" />
+    <Compile Include="ProcessExecutionResponseData.cs" />
     <Compile Include="ProcessDefinitionResponseData.cs" />
     <Compile Include="ProcessInstanceRequestUpdateData.cs" />
     <Compile Include="ProcessInstanceRequestData.cs" />
+    <Compile Include="ProcessInstanceResponseIndepthData.cs" />
     <Compile Include="ProcessInstanceResponseData.cs" />
     <Compile Include="ProcessVariableData.cs" />
     <Compile Include="ProcessInstancesResponse.cs" />
