@@ -179,12 +179,29 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public object GetWorkflowInstance(string id)
+        public T GetWorkflowInstanceVariables<T>(string id)
+        {
+            var uri = string.Format("runtime/process-instances/{0}/variables", id);
+            var response = Client.Invoke(uri);
+
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
+            return result;
+        }
+
+        public T GetWorkflowInstance<T>(string id)
         {
             var uri = string.Format("runtime/process-instances/{0}", id);
             var response = Client.Invoke(uri);
 
-            var result = JsonConvert.DeserializeObject<ProcessInstancesResponse>(response);
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
+            return result;
+        }
+
+
+        public object GetWorkflowInstance(string id)
+        {
+            var result = GetWorkflowInstance<ProcessInstanceResponseData>(id);
+            result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
             return result;
         }
 
