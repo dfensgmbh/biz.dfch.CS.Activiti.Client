@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProcessDefinitionResponseData.cs" />
+    <Compile Include="ProcessInstanceRequestUpdateData.cs" />
     <Compile Include="ProcessInstanceRequestData.cs" />
     <Compile Include="ProcessInstanceResponseData.cs" />
     <Compile Include="ProcessVariableData.cs" />

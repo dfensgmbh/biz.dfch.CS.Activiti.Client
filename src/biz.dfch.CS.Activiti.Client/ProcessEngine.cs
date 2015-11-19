@@ -45,6 +45,11 @@ namespace biz.dfch.CS.Activiti.Client
             }
         }
         public string ApplicationName { get; set; }
+        public enum EnumStatus
+        {
+            suspend,
+            activate
+        }
 
         #endregion
 
@@ -61,12 +66,15 @@ namespace biz.dfch.CS.Activiti.Client
 
         public ProcessEngine(Uri server, string username, string password)
         {
+            Contract.Requires(server != null && username != null && password != null);
+
             Client = new RestClient(server, username, password);
         }
 
         #endregion
 
         #region Functional Methods
+        // Login and Logout
         public void Login()
         {
             var uri = string.Format("identity/users/{0}", HttpUtility.UrlEncode(Client.Credential.UserName));
@@ -75,6 +83,8 @@ namespace biz.dfch.CS.Activiti.Client
 
         public void Login(string username, string password)
         {
+            Contract.Requires(username != null && password != null);
+
             Client.Username = username;
             Client.Password = password;
             Client.SetCredential(username, password);
@@ -83,6 +93,8 @@ namespace biz.dfch.CS.Activiti.Client
 
         public void Login(NetworkCredential credential)
         {
+            Contract.Requires(credential != null);
+
             Client.Credential = credential;
             Login();
         }
@@ -93,7 +105,9 @@ namespace biz.dfch.CS.Activiti.Client
             Client.Username = null;
             Client.Password = null;
         }
+        // Login and Logout end
 
+        // GetWorkflowDefinition(s)
         public T GetWorkflowDefinitions<T>()
         {
             var uri = string.Format("repository/process-definitions");
@@ -105,6 +119,8 @@ namespace biz.dfch.CS.Activiti.Client
 
         public object GetWorkflowDefinitions(Type type)
         {
+            Contract.Requires(type != null);
+
             var mi = this.GetType().GetMethods().Where(m => (m.Name == "GetWorkflowDefinitions" && m.IsGenericMethod)).First();
             Contract.Assert(null != mi, "No generic method type found.");
             var genericMethod = mi.MakeGenericMethod(type);
@@ -116,6 +132,8 @@ namespace biz.dfch.CS.Activiti.Client
         
         public object GetWorkflowDefinitions(object type)
         {
+            Contract.Requires(type != null);
+
             var mi = this.GetType().GetMethods().Where(m => (m.Name == "GetWorkflowDefinitions" && m.IsGenericMethod)).First();
             Contract.Assert(null != mi, "No generic method type found.");
             var genericMethod = mi.MakeGenericMethod(type.GetType());
@@ -131,8 +149,29 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
+        public T GetWorkflowDefinition<T>(string definitionId)
+        {
+            Contract.Requires(definitionId != null);
+
+            var uri = string.Format("repository/process-definitions/{0}", definitionId);
+            var response = Client.Invoke(uri);
+
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
+            return result;
+        }
+
+        public object GetWorkflowDefinition(string definitionId)
+        {
+            var result = GetWorkflowDefinition<ProcessDefinitionResponseData>(definitionId);
+            return result;
+        }
+        // GetWorkflowDefinition(s) end
+
+        // InvokeWorkflowInstance
         public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables)
         {
+            Contract.Requires(definitionId != null);
+
             var uri = string.Format("runtime/process-instances");
             var request = new ProcessInstanceRequestData()
             {
@@ -150,6 +189,8 @@ namespace biz.dfch.CS.Activiti.Client
 
         public object InvokeWorkflowInstance(string definitionId, Hashtable variablesHt)
         {
+            Contract.Requires(definitionId != null);
+
             var variables = new List<ProcessVariableData>();
             foreach (DictionaryEntry variable in variablesHt)
             {
@@ -163,7 +204,9 @@ namespace biz.dfch.CS.Activiti.Client
             var result = InvokeWorkflowInstance<ProcessInstanceResponseData>(definitionId, variables);
             return result;
         }
+        // InvokeWorkflowInstance end
 
+        // GetWorkflowInstance(s)
         public T GetWorkflowInstances<T>()
         {
             var uri = string.Format("runtime/process-instances");
@@ -181,6 +224,8 @@ namespace biz.dfch.CS.Activiti.Client
 
         public T GetWorkflowInstanceVariables<T>(string id)
         {
+            Contract.Requires(id != null);
+
             var uri = string.Format("runtime/process-instances/{0}/variables", id);
             var response = Client.Invoke(uri);
 
@@ -190,29 +235,59 @@ namespace biz.dfch.CS.Activiti.Client
 
         public T GetWorkflowInstance<T>(string id)
         {
+            Contract.Requires(id != null);
+
             var uri = string.Format("runtime/process-instances/{0}", id);
             var response = Client.Invoke(uri);
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
         }
-
-
+        
         public object GetWorkflowInstance(string id)
         {
             var result = GetWorkflowInstance<ProcessInstanceResponseData>(id);
             result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
             return result;
         }
+        // GetWorkflowInstance(s) end
 
-        public object UpdateWorkflowInstance(string id)
+        // UpdateWorkflowInstance
+        public T UpdateWorkflowInstance<T>(string id, EnumStatus status)
         {
-            var uri = string.Format("runtime/process-instances/{0}", id);
-            var response = Client.Invoke(uri);
+            Contract.Requires(id != null);
 
-            var result = JsonConvert.DeserializeObject<ProcessInstancesResponse>(response);
+            var uri = string.Format("runtime/process-instances/{0}", id);
+            var request = new ProcessInstanceRequestUpdateData()
+            {
+                action = status.ToString()
+            };
+            var jrequest = JsonConvert.SerializeObject(request);
+
+            Debug.WriteLine(string.Format("{0} Body {1}", "POST", jrequest));
+            var response = Client.Invoke("PUT", uri, null, null, jrequest);
+
+            var result = JsonConvert.DeserializeObject<T>(response);
             return result;
         }
+
+        public object UpdateWorkflowInstance(string id, EnumStatus status)
+        {
+            var result = UpdateWorkflowInstance<ProcessInstanceResponseData>(id, status);
+            result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
+            return result;
+        }
+        // UpdateWorkflowInstance end
+
+        // DeleteWorkflowInstance
+        public void DeleteWorkflowInstance(string id)
+        {
+            Contract.Requires(id != null);
+
+            var uri = string.Format("runtime/process-instances/{0}", id);
+            var response = Client.Invoke("DELETE", uri, null, null, null);
+        }
+        // DeleteWorkflowInstance end
 
         #endregion
 
