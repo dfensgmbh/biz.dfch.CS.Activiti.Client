@@ -21,32 +21,9 @@ using System.ComponentModel.DataAnnotations;
 namespace biz.dfch.CS.Activiti.Client
 {
 
-    #region activiti process-definitions v5.16.4.0
-    public class ProcessDefinitionsResponseData
-    {
-        [Required]
-        public string id { get; set; }
-        [Required]
-        public string url { get; set; }
-        public int version { get; set; }
-        public string key { get; set; }
-        public string category { get; set; }
-        public bool suspended { get; set; }
-        [Required]
-        public string name { get; set; }
-        public string description { get; set; }
-        public string deploymentId { get; set; }
-        public string deploymentUrl { get; set; }
-        public bool graphicalNotationDefined { get; set; }
-        public string resource { get; set; }
-        public string diagramResource { get; set; }
-        public bool startFormDefined { get; set; }
-
-    }
-        
     public class ProcessDefinitionsResponse
     {
-        public List<ProcessDefinitionsResponseData> data { get; set; }
+        public List<ProcessDefinitionResponseData> data { get; set; }
         public int size { get; set; }
         public string order { get; set; }
         public string sort { get; set; }
@@ -54,6 +31,5 @@ namespace biz.dfch.CS.Activiti.Client
         public int total { get; set; }
 
     }
-    #endregion
 
 }

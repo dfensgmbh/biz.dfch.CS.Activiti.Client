@@ -21,13 +21,10 @@ using System.ComponentModel.DataAnnotations;
 namespace biz.dfch.CS.Activiti.Client
 {
 
-    #region activiti process-instances v5.16.4.0
-    public class ProcessInstanceRequest
+    public class ProcessVariableData
     {
-        public string processDefinitionId { get; set; }
-        public string businessKey { get; set; }
-        public List<ProcessVariables> variables { get; set; }
+        public string name { get; set; }
+        public string value { get; set; }
     }
-    #endregion
 
 }

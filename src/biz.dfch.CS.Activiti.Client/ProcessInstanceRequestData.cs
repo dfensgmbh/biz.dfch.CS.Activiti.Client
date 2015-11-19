@@ -21,15 +21,11 @@ using System.ComponentModel.DataAnnotations;
 namespace biz.dfch.CS.Activiti.Client
 {
 
-    public class ProcessInstancesResponse
+    public class ProcessInstanceRequestData
     {
-        public List<ProcessInstanceResponseData> data { get; set; }
-        public int size { get; set; }
-        public string order { get; set; }
-        public string sort { get; set; }
-        public int start { get; set; }
-        public int total { get; set; }
-
+        public string processDefinitionId { get; set; }
+        public string businessKey { get; set; }
+        public List<ProcessVariableData> variables { get; set; }
     }
 
 }
