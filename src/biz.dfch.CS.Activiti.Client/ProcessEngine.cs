@@ -38,7 +38,7 @@ namespace biz.dfch.CS.Activiti.Client
             Suspend,
             Activate
         }
-        public enum EnumIndepths
+        public enum EnumIndepth
         {
             Executions,
             Tasks
@@ -78,7 +78,8 @@ namespace biz.dfch.CS.Activiti.Client
 
             if (_IsLoggedIn) return;
 
-            var uri = string.Format("identity/users/{0}", HttpUtility.UrlEncode(_Client.Credential.UserName));
+            _Client.Credential = credential;
+            var uri = string.Format("identity/users/{0}", HttpUtility.UrlEncode(credential.UserName));            
             var response = _Client.Invoke(uri);
 
             _IsLoggedIn = true;
@@ -129,7 +130,7 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public object GetWorkflowDefinitions()
+        public ProcessDefinitionsResponse GetWorkflowDefinitions()
         {
             var result = GetWorkflowDefinitions<ProcessDefinitionsResponse>();
             return result;
@@ -146,7 +147,7 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public object GetWorkflowDefinition(string definitionId)
+        public ProcessDefinitionResponseData GetWorkflowDefinition(string definitionId)
         {
             var result = GetWorkflowDefinition<ProcessDefinitionResponseData>(definitionId);
             return result;
@@ -173,7 +174,7 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public object InvokeWorkflowInstance(string definitionId, Hashtable variablesHt)
+        public ProcessInstanceResponseData InvokeWorkflowInstance(string definitionId, Hashtable variablesHt)
         {
             Contract.Requires(definitionId != null);
 
@@ -202,7 +203,7 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public object GetWorkflowInstances()
+        public ProcessInstancesResponse GetWorkflowInstances()
         {
             var result = GetWorkflowInstances<ProcessInstancesResponse>();
             return result;
@@ -230,30 +231,30 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public object GetWorkflowInstance(string id)
+        public ProcessInstanceResponseData GetWorkflowInstance(string id)
         {
             var result = GetWorkflowInstance<ProcessInstanceResponseData>(id);
             return result;
         }
 
-        public object GetWorkflowInstance(string id, bool indepth)
+        public ProcessInstanceResponseIndepthData GetWorkflowInstance(string id, bool indepth)
         {
             var result = GetWorkflowInstance<ProcessInstanceResponseIndepthData>(id);
             result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
-            var executions = GetWorkflowIndepths<ProcessExecutionsResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepths.Executions);
+            var executions = GetWorkflowIndepth<ProcessExecutionsResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Executions);
             result.executions = executions.data;
-            var tasks = GetWorkflowIndepths<ProcessTasksResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepths.Tasks);
+            var tasks = GetWorkflowIndepth<ProcessTasksResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Tasks);
             result.tasks = tasks.data;
             return result;
         }
         // GetWorkflowInstance(s) end
 
         // GetWorkflow indepth informations...
-        public T GetWorkflowIndepths<T>(string instanceId, EnumIndepths indepths)
+        public T GetWorkflowIndepth<T>(string instanceId, EnumIndepth Indepth)
         {
             Contract.Requires(instanceId != null);
 
-            var uri = string.Format("query/{0}", indepths.ToString().ToLower());
+            var uri = string.Format("query/{0}", Indepth.ToString().ToLower());
             var request = new Hashtable();
             request.Add("processInstanceId", instanceId);
             var jrequest = JsonConvert.SerializeObject(request);
@@ -265,15 +266,15 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public object GetWorkflowExections(string instanceId)
+        public ProcessExecutionsResponse GetWorkflowExections(string instanceId)
         {
-            var result = GetWorkflowIndepths<ProcessExecutionsResponse>(instanceId, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepths.Executions);
+            var result = GetWorkflowIndepth<ProcessExecutionsResponse>(instanceId, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Executions);
             return result;
         }
 
-        public object GetWorkflowTasks(string instanceId)
+        public ProcessTasksResponse GetWorkflowTasks(string instanceId)
         {
-            var result = GetWorkflowIndepths<ProcessTasksResponse>(instanceId, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepths.Tasks);
+            var result = GetWorkflowIndepth<ProcessTasksResponse>(instanceId, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Tasks);
             return result;
         }
         // GetWorkflow indepth informations end
@@ -297,7 +298,7 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public object UpdateWorkflowInstance(string id, EnumStatus status)
+        public ProcessInstanceResponseData UpdateWorkflowInstance(string id, EnumStatus status)
         {
             var result = UpdateWorkflowInstance<ProcessInstanceResponseData>(id, status);
             result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
