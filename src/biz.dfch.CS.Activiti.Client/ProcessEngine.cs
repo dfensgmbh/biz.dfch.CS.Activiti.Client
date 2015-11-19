@@ -164,12 +164,18 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public object GetWorkflowInstances()
+        public T GetWorkflowInstances<T>()
         {
             var uri = string.Format("runtime/process-instances");
             var response = Client.Invoke(uri);
 
-            var result = JsonConvert.DeserializeObject<ProcessInstancesResponse>(response);
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
+            return result;
+        }
+
+        public GetWorkflowInstances()
+        {
+            var result = GetWorkflowInstances<ProcessInstancesResponse>();
             return result;
         }
 
