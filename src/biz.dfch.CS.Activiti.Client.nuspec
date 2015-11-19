@@ -45,6 +45,6 @@ d-fens GmbH, General-Guisan-Strasse 6, CH-6300 Zug, Switzerland
         </dependencies>
     </metadata>
 	<files>
-		<file src="biz.dfch.CS.Activiti.Client\bin\Release\biz.dfch.CS.Activiti.Client.dll" target="lib\" />
+		<file src="biz.dfch.CS.Activiti.Client\bin\Debug\biz.dfch.CS.Activiti.Client.dll" target="lib\" />
 	</files>
 </package>
