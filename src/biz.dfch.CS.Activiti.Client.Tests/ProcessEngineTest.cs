@@ -29,7 +29,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         protected string username = "kermit";
         protected string password = "kermit";
         protected ProcessEngine _ProcessEngine = null;
-         
+
         [TestInitialize]
         public void TestInitialize()
         {
@@ -47,10 +47,10 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         #region test methods
 
         [TestMethod]
+        [ExpectedException(typeof(UnauthorizedAccessException), "A wrong username was inappropriately allowed.")]
         public void LoginWithWrongUsernameAndPassword()
         {
             this._ProcessEngine.Login("wrongusername", "1234");
-            Assert.IsTrue(!this._ProcessEngine.IsLoggedIn);
         }
 
 
