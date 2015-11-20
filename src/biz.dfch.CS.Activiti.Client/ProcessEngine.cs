@@ -73,6 +73,8 @@ namespace biz.dfch.CS.Activiti.Client
 
         #region Methods
 
+        #region Login and Logout
+
         public void Login(string username, string password)
         {
             base.Login(username, password);
@@ -84,7 +86,7 @@ namespace biz.dfch.CS.Activiti.Client
             base.Login(credential);
            Login();
         }
-        
+
         /// <summary>
         /// Checks if the user exists. If yes, _IsLoggedIn is set to true and user can make requests.
         /// If user does not exist, all further requests will fail.
@@ -106,9 +108,11 @@ namespace biz.dfch.CS.Activiti.Client
 
             _IsLoggedIn = false;
         }
-        // Login and Logout end
 
-        // GetWorkflowDefinition(s)
+        #endregion Login and Logout end
+
+        #region GetWorkflowDefinition(s)
+
         public T GetWorkflowDefinitions<T>()
         {
             var uri = string.Format("repository/process-definitions");
@@ -166,9 +170,11 @@ namespace biz.dfch.CS.Activiti.Client
             var result = GetWorkflowDefinition<ProcessDefinitionResponseData>(definitionId);
             return result;
         }
-        // GetWorkflowDefinition(s) end
 
-        // InvokeWorkflowInstance
+        #endregion GetWorkflowDefinition(s) end
+
+        #region InvokeWorkflowInstance
+
         public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables)
         {
             Contract.Requires(definitionId != null);
@@ -205,9 +211,11 @@ namespace biz.dfch.CS.Activiti.Client
             var result = InvokeWorkflowInstance<ProcessInstanceResponseData>(definitionId, variables);
             return result;
         }
-        // InvokeWorkflowInstance end
 
-        // GetWorkflowInstance(s)
+        #endregion InvokeWorkflowInstance end
+
+        #region GetWorkflowInstance(s)
+
         public T GetWorkflowInstances<T>()
         {
             var uri = string.Format("runtime/process-instances");
@@ -261,9 +269,11 @@ namespace biz.dfch.CS.Activiti.Client
             result.tasks = tasks.data;
             return result;
         }
-        // GetWorkflowInstance(s) end
 
-        // GetWorkflow indepth informations...
+        #endregion GetWorkflowInstance(s) end
+
+        #region GetWorkflow indepth informations...
+
         public T GetWorkflowIndepth<T>(string instanceId, EnumIndepth Indepth)
         {
             Contract.Requires(instanceId != null);
@@ -291,9 +301,11 @@ namespace biz.dfch.CS.Activiti.Client
             var result = GetWorkflowIndepth<ProcessTasksResponse>(instanceId, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Tasks);
             return result;
         }
-        // GetWorkflow indepth informations end
 
-        // UpdateWorkflowInstance
+        #endregion GetWorkflow indepth informations end
+
+        #region UpdateWorkflowInstance
+
         public T UpdateWorkflowInstance<T>(string id, EnumStatus status)
         {
             Contract.Requires(id != null);
@@ -318,9 +330,11 @@ namespace biz.dfch.CS.Activiti.Client
             result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
             return result;
         }
-        // UpdateWorkflowInstance end
 
-        // DeleteWorkflowInstance
+        #endregion UpdateWorkflowInstance end
+
+        #region DeleteWorkflowInstance
+
         public void DeleteWorkflowInstance(string id)
         {
             Contract.Requires(id != null);
@@ -328,7 +342,8 @@ namespace biz.dfch.CS.Activiti.Client
             var uri = string.Format("runtime/process-instances/{0}", id);
             var response = _Client.Invoke("DELETE", uri, null, null, null);
         }
-        // DeleteWorkflowInstance end
+
+        #endregion DeleteWorkflowInstance end
 
         #endregion
 
