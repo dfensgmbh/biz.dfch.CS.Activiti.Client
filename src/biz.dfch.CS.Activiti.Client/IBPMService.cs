@@ -25,17 +25,9 @@ using System.Threading.Tasks;
 
 namespace biz.dfch.CS.Activiti.Client
 {
-
-
-
-
     [ContractClass(typeof(ContractClassForIBPMService))]
     interface IBPMService
     {
-        // TODO cwi: Return types
-        // Namespace interface?
-        // Exists user?
-
         void Login(string username, string password);
 
         void Login(NetworkCredential credential);
@@ -46,7 +38,7 @@ namespace biz.dfch.CS.Activiti.Client
 
         object GetWorkflowDefinitions(Type type);
 
-        object GetWorkflowDefinitions(object type); // T?
+        object GetWorkflowDefinitions(object type); 
 
         object GetWorkflowDefinitions();
 
@@ -63,8 +55,4 @@ namespace biz.dfch.CS.Activiti.Client
         object UpdateWorkflowInstance(string id);
 
     }
-
-
-
-
 }

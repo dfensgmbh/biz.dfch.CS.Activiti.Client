@@ -22,13 +22,14 @@ namespace biz.dfch.CS.Activiti.Client.Tests
     [TestClass]
     public class ProcessEngineTest
     {
+        #region test initialisation and cleanup
 
         protected Uri serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
         protected string applicationName = "";
         protected string username = "kermit";
         protected string password = "kermit";
         protected ProcessEngine _ProcessEngine = null;
-
+         
         [TestInitialize]
         public void TestInitialize()
         {
@@ -38,8 +39,12 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         [TestCleanup]
         public void TestCleanup()
         {
-            
+
         }
+
+        #endregion
+
+        #region test methods
 
         [TestMethod]
         public void LoginWithWrongUsernameAndPassword()
@@ -57,95 +62,23 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         }
 
 
-
-        //[TestMethod]
-        //public void CreatingProcessEngineWithParameterlessConstructorSucceeds()
-        //{
-        //    // Arrange
-
-        //    // Act
-        //    var processEngine = new ProcessEngine();
-
-        //    // Assert
-        //    Assert.IsNotNull(processEngine);
-
-        //}
-
-        //[TestMethod]
-        //public void CreatingProcessEngineWithParamterisedSucceeds()
-        //{
-        //    // Arrange
-        //    var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
-        //    var username = "kermit";
-        //    var password = "kermit";
-
-        //    // Act
-        //    var processEngine = new ProcessEngine(serveruri, username, password);
-
-        //    // Assert
-        //    Assert.IsNotNull(processEngine);
-        //    Assert.AreEqual(serveruri, processEngine.Client.UriServer);
-        //    Assert.AreEqual(username, processEngine.Client.Username);
-        //    //Assert.AreEqual(password, restClient.Password);
-        //}
-
-        //[TestMethod]
-        //public void CreatingProcessEngineWithClientSucceeds()
-        //{
-        //    // Arrange
-        //    var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
-        //    var username = "kermit";
-        //    var password = "kermit";
-
-        //    // Act
-        //    var restClient = new RestClient(serveruri, username, password);
-        //    var processEngine = new ProcessEngine(restClient);
-        //    processEngine.Login();
-
-        //    // Assert
-        //    Assert.IsNotNull(restClient);
-        //    Assert.IsNotNull(processEngine);
-        //    Assert.AreEqual(serveruri, restClient.UriServer);
-        //    Assert.AreEqual(username, restClient.Username);
-        //    Assert.AreEqual(username, processEngine.Client.Username);
-        //    //Assert.AreEqual(password, restClient.Password);
-        //}
-
-        //[TestMethod]
-        //public void CreatingProcessEngineAndLoginSucceeds()
-        //{
-        //    // Arrange
-        //    var serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
-        //    var username = "kermit";
-        //    var password = "kermit";
-
-        //    // Act
-        //    var processEngine = new ProcessEngine(serveruri, username, password);
-        //    processEngine.Login(username, password);
-
-        //    // Assert
-        //    Assert.IsNotNull(processEngine);
-        //    Assert.AreEqual(serveruri, processEngine.Client.UriServer);
-        //    Assert.AreEqual(username, processEngine.Client.Username);
-        //    //Assert.AreEqual(password, restClient.Password);
-        //}
-
         [TestMethod]
         public void GetWorkflowDefinitions()
         {
             // Arrange
-           
+
 
             // Act
-           this._ProcessEngine.Login(username, password);
-           Assert.IsTrue(this._ProcessEngine.IsLoggedIn);
-           var wdefObj1 = this._ProcessEngine.GetWorkflowDefinitions<ProcessDefinitionsResponse>();
-           var wdefObj2 = this._ProcessEngine.GetWorkflowDefinitions();
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn);
+            var wdefObj1 = this._ProcessEngine.GetWorkflowDefinitions<ProcessDefinitionsResponse>();
+            var wdefObj2 = this._ProcessEngine.GetWorkflowDefinitions();
 
             // Assert
             Assert.IsNotNull(wdefObj1);
             Assert.IsNotNull(wdefObj2);
         }
 
+        #endregion
     }
 }

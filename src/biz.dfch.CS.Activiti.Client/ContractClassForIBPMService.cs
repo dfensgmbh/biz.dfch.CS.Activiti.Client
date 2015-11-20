@@ -43,11 +43,18 @@ namespace biz.dfch.CS.Activiti.Client
         {
         }
 
-        public ContractClassForIBPMService(Uri server, string applicationName)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="server">Uri from the REST-Client</param>
+        /// <param name="applicationName">Optional application name.</param>
+        /// <param name="tiemoutSec">Timeout REST-Client. Must be greater than 0. Else the clients default is used.</param>
+        public ContractClassForIBPMService(Uri server, string applicationName= "", int tiemoutSec = 0)
         {
             Contract.Requires(server != null);
             this._ApplicationName = applicationName;
             this._Client = new RestClient(server);
+            if (tiemoutSec>0)this._Client.TimeoutSec = tiemoutSec;
 
             Contract.Ensures(_Client != null);
         }
@@ -74,11 +81,13 @@ namespace biz.dfch.CS.Activiti.Client
             Contract.Requires(username != null);
             Contract.Requires(password != null);
 
+            this._Client.SetCredential(username, password);
         }
 
         public void Login(NetworkCredential credential)
         {
             Contract.Requires(credential != null);
+            this._Client.Credential = credential;
 
         }
 

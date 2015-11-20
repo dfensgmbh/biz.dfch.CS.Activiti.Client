@@ -31,7 +31,7 @@ namespace biz.dfch.CS.Activiti.Client
 {
     public class ProcessEngine : ContractClassForIBPMService
     {
-        #region Constants and Properties
+        #region Constants, Enums and Properties
 
         public enum EnumStatus
         {
@@ -63,38 +63,43 @@ namespace biz.dfch.CS.Activiti.Client
             // N/A
         }
 
-        public ProcessEngine(Uri server, string applicationName)
-            : base(server, applicationName)
+        public ProcessEngine(Uri server, string applicationName="", int timeoutSec=0)
+            : base(server, applicationName, timeoutSec)
         {
             Contract.Requires(server != null);
         }
 
         #endregion
 
-        #region Functional Methods
+        #region Methods
 
         public void Login(string username, string password)
         {
             base.Login(username, password);
-
-            this.Login(new NetworkCredential(username, password));
-
+            Login();
         }
 
         public void Login(NetworkCredential credential)
         {
             base.Login(credential);
-
+           Login();
+        }
+        
+        /// <summary>
+        /// Checks if the user exists. If yes, _IsLoggedIn is set to true and user can make requests.
+        /// If user does not exist, all further requests will fail.
+        /// </summary>
+        private void Login()
+        {
             if (_IsLoggedIn) return;
-
-            _Client.Credential = credential;
-            var uri = string.Format("identity/users/{0}", HttpUtility.UrlEncode(credential.UserName));
+            var uri = string.Format("identity/users/{0}", HttpUtility.UrlEncode(_Client.Credential.UserName));
             var response = _Client.Invoke(uri);
-
             _IsLoggedIn = true;
-
         }
 
+        /// <summary>
+        /// After logout a user cannot do some requests. He has to login again.
+        /// </summary>
         public void Logout()
         {
             _Client.Credential = new NetworkCredential(String.Empty, String.Empty);
@@ -172,7 +177,7 @@ namespace biz.dfch.CS.Activiti.Client
             var request = new ProcessInstanceRequestData()
             {
                 processDefinitionId = definitionId,
-                businessKey = _ApplicationName //  Contract.Requires(server != null);?
+                businessKey = _ApplicationName
             };
             request.variables = variables;
             var jrequest = JsonConvert.SerializeObject(request);
