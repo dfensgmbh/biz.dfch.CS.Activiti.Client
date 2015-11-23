@@ -47,7 +47,6 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         #region test methods
 
         [TestMethod]
-        [TestCategory("SkipOnTeamCity")]
         public void Test()
         {
             
