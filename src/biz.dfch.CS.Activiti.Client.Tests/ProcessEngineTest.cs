@@ -72,7 +72,36 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn);
         }
 
+        /*
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void LogoutFailed()
+        {
+            ProcessEngine ProcessEngine = new ProcessEngine(serveruri, applicationName);            
+            try
+            {
+                ProcessEngine.Logout();
+                Assert.Fail("Expected contract failure");
+            }
+            catch (Exception e)
+            {
+                if (e.GetType().FullName != "System.Diagnostics.Contracts.__ContractsRuntime.ContractException")
+                {
+                    throw;
+                }
+                // Correct exception was thrown. Fine.
+            }
+        }
+         */
 
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void Logout()
+        {
+            this._ProcessEngine.Logout();
+            Assert.IsFalse(this._ProcessEngine.IsLoggedIn);
+        }
+        
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
         public void GetWorkflowDefinitions()
