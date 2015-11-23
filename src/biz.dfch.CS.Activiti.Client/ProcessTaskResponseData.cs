@@ -41,6 +41,12 @@ namespace biz.dfch.CS.Activiti.Client
         public string url { get; set; }
         public string tenantId { get; set; }
 
+        public string jidentitylinks { get; set; }
+        public string jcomments { get; set; }
+        public string jvariables { get; set; }
+        public string jevents { get; set; }
+        public string jattachments { get; set; }
+
     }
 
 }

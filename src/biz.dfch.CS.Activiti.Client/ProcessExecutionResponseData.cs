@@ -33,6 +33,9 @@ namespace biz.dfch.CS.Activiti.Client
         public string activityId { get; set; }
         public string tenantId { get; set; }
 
+        public string jactivities { get; set; }
+        public string jvariables { get; set; }
+
     }
 
 }
