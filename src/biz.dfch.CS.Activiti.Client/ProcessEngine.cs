@@ -111,9 +111,8 @@ namespace biz.dfch.CS.Activiti.Client
         /// </summary>
         public void Logout()
         {
-            _Client.Credential = new NetworkCredential(String.Empty, String.Empty);
-
-            _IsLoggedIn = false;
+            Contract.Requires(_IsLoggedIn == true);
+            base.Logout();
         }
 
         #endregion Login and Logout end
@@ -182,18 +181,33 @@ namespace biz.dfch.CS.Activiti.Client
 
         #region InvokeWorkflowInstance
 
-        public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables)
+        public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables, string tenantId = null)
         {
             Contract.Requires(definitionId != null);
 
             var uri = string.Format("runtime/process-instances");
-            var request = new ProcessInstanceRequestData()
+            string jrequest;
+            if (tenantId == null)
             {
-                processDefinitionId = definitionId,
-                businessKey = _ApplicationName
-            };
-            request.variables = variables;
-            var jrequest = JsonConvert.SerializeObject(request);
+                var request = new ProcessInstanceRequestData()
+                {
+                    processDefinitionId = definitionId,
+                    businessKey = _ApplicationName
+                };
+                request.variables = variables;
+                jrequest = JsonConvert.SerializeObject(request);
+            } 
+            else
+            {
+                var request = new ProcessInstanceRequestTenantData()
+                {
+                    processDefinitionKey = definitionId,
+                    businessKey = _ApplicationName,
+                    tenantId = tenantId
+                };
+                request.variables = variables;
+                jrequest = JsonConvert.SerializeObject(request);
+            }
 
             Debug.WriteLine(string.Format("Body: {0}", jrequest));
             var response = _Client.Invoke("POST", uri, null, null, jrequest);
@@ -201,7 +215,7 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public ProcessInstanceResponseData InvokeWorkflowInstance(string definitionId, Hashtable variablesHt)
+        public ProcessInstanceResponseData InvokeWorkflowInstance(string definitionId, Hashtable variablesHt, string tenantId = null)
         {
             Contract.Requires(definitionId != null);
 
@@ -215,7 +229,7 @@ namespace biz.dfch.CS.Activiti.Client
                 }
                 );
             }
-            var result = InvokeWorkflowInstance<ProcessInstanceResponseData>(definitionId, variables);
+            var result = InvokeWorkflowInstance<ProcessInstanceResponseData>(definitionId, variables, tenantId);
             return result;
         }
 
