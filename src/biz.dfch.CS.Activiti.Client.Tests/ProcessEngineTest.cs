@@ -47,6 +47,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         #region test methods
 
         [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
         [ExpectedException(typeof(UnauthorizedAccessException), "A wrong username was inappropriately allowed.")]
         public void LoginWithWrongUsernameAndPassword()
         {
@@ -55,6 +56,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
 
         [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
         public void Login()
         {
             this._ProcessEngine.Login(username, password);
@@ -63,6 +65,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
 
         [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
         public void GetWorkflowDefinitions()
         {
             // Arrange
