@@ -48,6 +48,13 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         #region test methods
 
         [TestMethod]
+        public void Test()
+        {
+
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
         [ExpectedException(typeof(AggregateException), "Invalid uri.")]
         public void LoginWithInvalidUri()
         {
