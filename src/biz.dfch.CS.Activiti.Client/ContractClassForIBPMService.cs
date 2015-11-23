@@ -94,6 +94,13 @@ namespace biz.dfch.CS.Activiti.Client
         public void Logout()
         {
             Contract.Requires(_Client != null);
+            Contract.Requires(_IsLoggedIn == true);
+
+            this._Client.Credential = new NetworkCredential(String.Empty, String.Empty);
+            this._IsLoggedIn = false;
+
+            Contract.Assert(_IsLoggedIn == false);
+            Contract.Assume(_IsLoggedIn == false);
         }
 
         public T GetWorkflowDefinitions<T>()
@@ -125,14 +132,14 @@ namespace biz.dfch.CS.Activiti.Client
             return default(object);
         }
 
-        public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables)
+        public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables, string tenantId)
         {
             Contract.Requires(_Client != null);
             Contract.Requires(_IsLoggedIn);
             return default(T);
         }
 
-        public object InvokeWorkflowInstance(string definitionId, Hashtable variablesHt)
+        public object InvokeWorkflowInstance(string definitionId, Hashtable variablesHt, string tenantId)
         {
             Contract.Requires(_Client != null);
             Contract.Requires(_IsLoggedIn);
@@ -153,6 +160,20 @@ namespace biz.dfch.CS.Activiti.Client
             return default(object);
         }
 
+        public T GetWorkflowInstanceVariables<T>(string id)
+        {
+            Contract.Requires(_Client != null);
+            Contract.Requires(_IsLoggedIn);
+            return default(T);
+        }
+
+        public T GetWorkflowInstance<T>(string id)
+        {
+            Contract.Requires(_Client != null);
+            Contract.Requires(_IsLoggedIn);
+            return default(T);
+        }
+
         public object GetWorkflowInstance(string id)
         {
             Contract.Requires(_Client != null);
@@ -160,11 +181,59 @@ namespace biz.dfch.CS.Activiti.Client
             return default(object);
         }
 
-        public object UpdateWorkflowInstance(string id)
+        public object GetWorkflowInstance(string id, bool indepth)
         {
             Contract.Requires(_Client != null);
             Contract.Requires(_IsLoggedIn);
             return default(object);
+        }
+
+        public string GetWorkflowInstanceDetails(string uri)
+        {
+            Contract.Requires(_Client != null);
+            Contract.Requires(_IsLoggedIn);
+            return default(string);
+        }
+
+        public T GetWorkflowIndepth<T>(string instanceId, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth Indepth)
+        {
+            Contract.Requires(_Client != null);
+            Contract.Requires(_IsLoggedIn);
+            return default(T);
+        }
+
+        public object GetWorkflowExections(string instanceId)
+        {
+            Contract.Requires(_Client != null);
+            Contract.Requires(_IsLoggedIn);
+            return default(object);
+        }
+
+        public object GetWorkflowTasks(string instanceId)
+        {
+            Contract.Requires(_Client != null);
+            Contract.Requires(_IsLoggedIn);
+            return default(object);
+        }
+
+        public T UpdateWorkflowInstance<T>(string id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumStatus status)
+        {
+            Contract.Requires(_Client != null);
+            Contract.Requires(_IsLoggedIn);
+            return default(T);
+        }
+
+        public object UpdateWorkflowInstance(string id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumStatus status)
+        {
+            Contract.Requires(_Client != null);
+            Contract.Requires(_IsLoggedIn);
+            return default(object);
+        }
+
+        public void DeleteWorkflowInstance(string id)
+        {
+            Contract.Requires(_Client != null);
+            Contract.Requires(_IsLoggedIn);
         }
 
         #endregion

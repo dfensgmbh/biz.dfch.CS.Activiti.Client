@@ -42,17 +42,35 @@ namespace biz.dfch.CS.Activiti.Client
 
         object GetWorkflowDefinitions();
 
-        T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables);
+        T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables, string tenantId);
 
-        object InvokeWorkflowInstance(string definitionId, Hashtable variablesHt);
+        object InvokeWorkflowInstance(string definitionId, Hashtable variablesHt, string tenantId);
 
         T GetWorkflowInstances<T>();
 
         object GetWorkflowInstances();
 
+        T GetWorkflowInstanceVariables<T>(string id);
+
+        T GetWorkflowInstance<T>(string id);
+
         object GetWorkflowInstance(string id);
 
-        object UpdateWorkflowInstance(string id);
+        object GetWorkflowInstance(string id, bool indepth);
+
+        string GetWorkflowInstanceDetails(string uri);
+
+        T GetWorkflowIndepth<T>(string instanceId, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth Indepth);
+
+        object GetWorkflowExections(string instanceId);
+
+        object GetWorkflowTasks(string instanceId);
+
+        T UpdateWorkflowInstance<T>(string id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumStatus status);
+
+        object UpdateWorkflowInstance(string id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumStatus status);
+
+        void DeleteWorkflowInstance(string id);
 
     }
 }
