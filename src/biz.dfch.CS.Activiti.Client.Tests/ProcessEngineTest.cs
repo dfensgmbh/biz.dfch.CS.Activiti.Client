@@ -48,6 +48,13 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
+        public void Test()
+        {
+            
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
         [ExpectedException(typeof(UnauthorizedAccessException), "A wrong username was inappropriately allowed.")]
         public void LoginWithWrongUsernameAndPassword()
         {
