@@ -53,6 +53,13 @@ namespace biz.dfch.CS.Activiti.Client
             }
         }
 
+        private Hashtable _QueryParameters(int size = int.MaxValue)
+        {
+            var uquery = new Hashtable();
+            uquery.Add("size", size);
+            return uquery;
+        }
+
         #endregion
 
         #region Constructor And Initialisation
@@ -116,7 +123,7 @@ namespace biz.dfch.CS.Activiti.Client
         public T GetWorkflowDefinitions<T>()
         {
             var uri = string.Format("repository/process-definitions");
-            var response = _Client.Invoke(uri);
+            var response = _Client.Invoke(uri, _QueryParameters());
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
@@ -219,7 +226,7 @@ namespace biz.dfch.CS.Activiti.Client
         public T GetWorkflowInstances<T>()
         {
             var uri = string.Format("runtime/process-instances");
-            var response = _Client.Invoke(uri);
+            var response = _Client.Invoke(uri, _QueryParameters());
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
@@ -236,7 +243,7 @@ namespace biz.dfch.CS.Activiti.Client
             Contract.Requires(id != null);
 
             var uri = string.Format("runtime/process-instances/{0}/variables", id);
-            var response = _Client.Invoke(uri);
+            var response = _Client.Invoke(uri, _QueryParameters());
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
