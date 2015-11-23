@@ -70,7 +70,7 @@ namespace biz.dfch.CS.Activiti.Client
             // N/A
         }
 
-        public ProcessEngine(Uri server, string applicationName="", int timeoutSec=0)
+        public ProcessEngine(Uri server, string applicationName = "", int timeoutSec = 0)
             : base(server, applicationName, timeoutSec)
         {
             Contract.Requires(server != null);
@@ -91,7 +91,7 @@ namespace biz.dfch.CS.Activiti.Client
         public void Login(NetworkCredential credential)
         {
             base.Login(credential);
-           Login();
+            Login();
         }
 
         /// <summary>
@@ -269,12 +269,34 @@ namespace biz.dfch.CS.Activiti.Client
         public ProcessInstanceResponseIndepthData GetWorkflowInstance(string id, bool indepth)
         {
             var result = GetWorkflowInstance<ProcessInstanceResponseIndepthData>(id);
-            result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
-            var executions = GetWorkflowIndepth<ProcessExecutionsResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Executions);
-            result.executions = executions.data;
-            var tasks = GetWorkflowIndepth<ProcessTasksResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Tasks);
-            result.tasks = tasks.data;
+            if (indepth == true)
+            {
+                result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
+                var executions = GetWorkflowIndepth<ProcessExecutionsResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Executions);
+                result.executions = executions.data;
+                foreach (var entry in result.executions)
+                {
+                    entry.jactivities = GetWorkflowInstanceDetails(String.Format("runtime/executions/{0}/activities", entry.id));
+                    //entry.jvariables = GetWorkflowInstanceDetails(String.Format("runtime/executions/{0}/variables", entry.id));
+                }
+                var tasks = GetWorkflowIndepth<ProcessTasksResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Tasks);
+                result.tasks = tasks.data;
+                foreach (var entry in result.tasks)
+                {
+                    entry.jidentitylinks = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/identitylinks", entry.id));
+                    entry.jcomments = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/comments", entry.id));
+                    entry.jvariables = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/variables", entry.id));
+                    entry.jevents = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/events", entry.id));
+                    entry.jattachments = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/attachments", entry.id));
+                }
+            }
             return result;
+        }
+
+        public string GetWorkflowInstanceDetails (string uri)
+        {
+            var response = _Client.Invoke(uri, _QueryParameters());
+            return response;
         }
 
         #endregion GetWorkflowInstance(s) end
