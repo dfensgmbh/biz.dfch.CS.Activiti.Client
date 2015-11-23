@@ -16,6 +16,7 @@
 
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Net.Sockets;
 
 namespace biz.dfch.CS.Activiti.Client.Tests
 {
@@ -45,6 +46,14 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         #endregion
 
         #region test methods
+
+        [TestMethod]
+        [ExpectedException(typeof(AggregateException), "Invalid uri.")]
+        public void LoginWithInvalidUri()
+        {
+            ProcessEngine ProcessEngine = new ProcessEngine(new Uri("http://localhost:9000/activiti-rest/service/"), "InvalidClient");
+            ProcessEngine.Login("wrongusername", "1234");
+        }
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
