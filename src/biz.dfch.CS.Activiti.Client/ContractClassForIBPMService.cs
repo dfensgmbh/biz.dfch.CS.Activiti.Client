@@ -57,6 +57,8 @@ namespace biz.dfch.CS.Activiti.Client
 
         public void Logout()
         {
+            Contract.Requires(IsLoggedIn() == true);
+            Contract.Assume(IsLoggedIn() == false);
         }
 
         public T GetWorkflowDefinitions<T>()

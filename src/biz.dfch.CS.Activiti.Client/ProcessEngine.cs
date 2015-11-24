@@ -125,6 +125,7 @@ namespace biz.dfch.CS.Activiti.Client
         /// </summary>
         public void Logout()
         {
+            if (!IsLoggedIn()) throw new Exception("Perform a login before logout.");
             this._Client.Credential = new NetworkCredential(String.Empty, String.Empty);
             this._IsLoggedIn = false;
         }
