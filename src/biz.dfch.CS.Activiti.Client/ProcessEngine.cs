@@ -196,33 +196,18 @@ namespace biz.dfch.CS.Activiti.Client
 
         #region InvokeWorkflowInstance
 
-        public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables, string tenantId = null)
+        public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables)
         {
             Contract.Requires(definitionId != null);
 
             var uri = string.Format("runtime/process-instances");
-            string jrequest;
-            if (tenantId == null)
+            var request = new ProcessInstanceRequestData()
             {
-                var request = new ProcessInstanceRequestData()
-                {
-                    processDefinitionId = definitionId,
-                    businessKey = _ApplicationName
-                };
-                request.variables = variables;
-                jrequest = JsonConvert.SerializeObject(request);
-            }
-            else
-            {
-                var request = new ProcessInstanceRequestTenantData()
-                {
-                    processDefinitionKey = definitionId,
-                    businessKey = _ApplicationName,
-                    tenantId = tenantId
-                };
-                request.variables = variables;
-                jrequest = JsonConvert.SerializeObject(request);
-            }
+                processDefinitionId = definitionId,
+                businessKey = _ApplicationName
+            };
+            request.variables = variables;
+            string jrequest = JsonConvert.SerializeObject(request);
 
             Debug.WriteLine(string.Format("Body: {0}", jrequest));
             var response = _Client.Invoke("POST", uri, null, null, jrequest);
@@ -230,7 +215,27 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public ProcessInstanceResponseData InvokeWorkflowInstance(string definitionId, Hashtable variablesHt, string tenantId = null)
+        public T InvokeWorkflowTenantInstance<T>(string definitionId, List<ProcessVariableData> variables, string tenantId)
+        {
+            Contract.Requires(definitionId != null);
+
+            var uri = string.Format("runtime/process-instances");
+            var request = new ProcessInstanceRequestTenantData()
+            {
+                processDefinitionKey = definitionId,
+                businessKey = _ApplicationName,
+                tenantId = tenantId
+            };
+            request.variables = variables;
+            string jrequest = JsonConvert.SerializeObject(request);
+
+            Debug.WriteLine(string.Format("Body: {0}", jrequest));
+            var response = _Client.Invoke("POST", uri, null, null, jrequest);
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
+            return result;
+        }
+
+        public ProcessInstanceResponseData InvokeWorkflowInstance(string definitionId, Hashtable variablesHt, string tenantId = "")
         {
             Contract.Requires(definitionId != null);
 
@@ -244,8 +249,14 @@ namespace biz.dfch.CS.Activiti.Client
                 }
                 );
             }
-            var result = InvokeWorkflowInstance<ProcessInstanceResponseData>(definitionId, variables, tenantId);
-            return result;
+            if ( tenantId == "" )
+            {
+                return InvokeWorkflowInstance<ProcessInstanceResponseData>(definitionId, variables);
+            } 
+            else
+            {
+                return InvokeWorkflowTenantInstance<ProcessInstanceResponseData>(definitionId, variables, tenantId);
+            }                
         }
 
         #endregion InvokeWorkflowInstance end

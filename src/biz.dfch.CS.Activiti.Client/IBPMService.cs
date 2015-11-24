@@ -44,7 +44,9 @@ namespace biz.dfch.CS.Activiti.Client
 
         ProcessDefinitionsResponse GetWorkflowDefinitions();
 
-        T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables, string tenantId);
+        T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables);
+
+        T InvokeWorkflowTenantInstance<T>(string definitionId, List<ProcessVariableData> variables, string tenantId);
 
         ProcessInstanceResponseData InvokeWorkflowInstance(string definitionId, Hashtable variablesHt, string tenantId);
 

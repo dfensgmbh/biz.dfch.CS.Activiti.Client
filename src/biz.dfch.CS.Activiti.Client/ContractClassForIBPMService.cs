@@ -83,7 +83,14 @@ namespace biz.dfch.CS.Activiti.Client
             return default(ProcessDefinitionsResponse);
         }
 
-        public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables, string tenantId)
+        public T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables)
+        {
+            Contract.Requires(!string.IsNullOrEmpty(definitionId));
+            Contract.Requires(variables != null);
+            return default(T);
+        }
+
+        public T InvokeWorkflowTenantInstance<T>(string definitionId, List<ProcessVariableData> variables, string tenantId)
         {
             Contract.Requires(!string.IsNullOrEmpty(definitionId));
             Contract.Requires(variables != null);
@@ -95,7 +102,6 @@ namespace biz.dfch.CS.Activiti.Client
         {
             Contract.Requires(!string.IsNullOrEmpty(definitionId));
             Contract.Requires(variablesHt != null);
-            Contract.Requires(!string.IsNullOrEmpty(tenantId));
             return default(ProcessInstanceResponseData);
         }
 

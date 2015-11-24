@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net.Sockets;
 using System.Diagnostics.Contracts;
 using Telerik.JustMock;
+using System.Collections;
 
 namespace biz.dfch.CS.Activiti.Client.Tests
 {
@@ -137,6 +138,42 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Assert
             Assert.IsNotNull(wdefObj);
             Assert.IsTrue(wdefObj.total == 0);
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void InvokeWorkflow()
+        {
+            // Arrange
+            var definitionid = "createTimersProcess:1:31";
+            var vars = new Hashtable();
+            vars.Add("duration", "long");
+            vars.Add("throwException", "true");
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            var instanceNew = this._ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
+
+            // Assert
+            Assert.IsNotNull(instanceNew);
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        [ExpectedException(typeof(ArgumentException), "Unknown workflow process definition")]
+        public void InvokeWorkflowFail()
+        {
+            // Arrange
+            var definitionid = "createTimersProcess:1:30";
+            var vars = new Hashtable();
+            vars.Add("duration", "long");
+            vars.Add("throwException", "true");
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            var instanceNew = this._ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
+
+            // Assert
         }
 
         #endregion
