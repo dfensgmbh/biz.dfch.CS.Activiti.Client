@@ -33,6 +33,8 @@ namespace biz.dfch.CS.Activiti.Client
         {
             Contract.Requires(server != null);
             Contract.Requires(!string.IsNullOrEmpty(server.Host), "Host is missing!");
+            Contract.Requires(applicationName != null);
+            Contract.Requires(timeoutSec >= 0);
         }
 
         #region methods
@@ -55,7 +57,6 @@ namespace biz.dfch.CS.Activiti.Client
 
         public void Logout()
         {
-
         }
 
         public T GetWorkflowDefinitions<T>()
