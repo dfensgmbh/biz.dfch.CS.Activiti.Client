@@ -28,6 +28,8 @@ namespace biz.dfch.CS.Activiti.Client
     [ContractClass(typeof(ContractClassForIBPMService))]
     interface IBPMService
     {
+        bool IsLoggedIn();
+
         void Login(string username, string password);
 
         void Login(NetworkCredential credential);
@@ -38,37 +40,37 @@ namespace biz.dfch.CS.Activiti.Client
 
         object GetWorkflowDefinitions(Type type);
 
-        object GetWorkflowDefinitions(object type); 
+        object GetWorkflowDefinitions(object type);
 
-        object GetWorkflowDefinitions();
+        ProcessDefinitionsResponse GetWorkflowDefinitions();
 
         T InvokeWorkflowInstance<T>(string definitionId, List<ProcessVariableData> variables, string tenantId);
 
-        object InvokeWorkflowInstance(string definitionId, Hashtable variablesHt, string tenantId);
+        ProcessInstanceResponseData InvokeWorkflowInstance(string definitionId, Hashtable variablesHt, string tenantId);
 
         T GetWorkflowInstances<T>();
 
-        object GetWorkflowInstances();
+        ProcessInstancesResponse GetWorkflowInstances();
 
         T GetWorkflowInstanceVariables<T>(string id);
 
         T GetWorkflowInstance<T>(string id);
 
-        object GetWorkflowInstance(string id);
+        ProcessInstanceResponseData GetWorkflowInstance(string id);
 
-        object GetWorkflowInstance(string id, bool indepth);
+        ProcessInstanceResponseIndepthData GetWorkflowInstance(string id, bool indepth);
 
         string GetWorkflowInstanceDetails(string uri);
 
         T GetWorkflowIndepth<T>(string instanceId, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth Indepth);
 
-        object GetWorkflowExections(string instanceId);
+        ProcessExecutionsResponse GetWorkflowExecutions(string instanceId);
 
-        object GetWorkflowTasks(string instanceId);
+        ProcessTasksResponse GetWorkflowTasks(string instanceId);
 
         T UpdateWorkflowInstance<T>(string id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumStatus status);
 
-        object UpdateWorkflowInstance(string id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumStatus status);
+        ProcessInstanceResponseData UpdateWorkflowInstance(string id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumStatus status);
 
         void DeleteWorkflowInstance(string id);
 

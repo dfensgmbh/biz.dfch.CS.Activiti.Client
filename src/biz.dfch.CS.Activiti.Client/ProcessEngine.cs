@@ -29,8 +29,33 @@ using System.Net;
 
 namespace biz.dfch.CS.Activiti.Client
 {
-    public class ProcessEngine : ContractClassForIBPMService
+    public class ProcessEngine : IBPMService
     {
+        #region private variables
+
+        private RestClient _Client = null;
+        private string _ApplicationName = "";
+        private bool _IsLoggedIn = false;
+
+        #endregion
+
+        #region constructors
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="server">Uri from the REST-Client</param>
+        /// <param name="applicationName">Optional application name.</param>
+        /// <param name="timeoutSec">Timeout REST-Client. Must be greater than 0. Else the clients default is used.</param>
+        public ProcessEngine(Uri server, string applicationName = "", int timeoutSec = 0)
+        {
+            this._ApplicationName = applicationName;
+            this._Client = new RestClient(server);
+            if (timeoutSec > 0) this._Client.TimeoutSec = timeoutSec;
+        }
+
+        #endregion
+
         #region Constants, Enums and Properties
 
         public enum EnumStatus
@@ -62,35 +87,24 @@ namespace biz.dfch.CS.Activiti.Client
 
         #endregion
 
-        #region Constructor And Initialisation
-
-        public ProcessEngine()
-            : base()
-        {
-            // N/A
-        }
-
-        public ProcessEngine(Uri server, string applicationName = "", int timeoutSec = 0)
-            : base(server, applicationName, timeoutSec)
-        {
-            Contract.Requires(server != null);
-        }
-
-        #endregion
-
         #region Methods
 
         #region Login and Logout
 
+        public bool IsLoggedIn()
+        {
+            return _IsLoggedIn;
+        }
+
         public void Login(string username, string password)
         {
-            base.Login(username, password);
+            this._Client.SetCredential(username, password);
             Login();
         }
 
         public void Login(NetworkCredential credential)
         {
-            base.Login(credential);
+            this._Client.Credential = credential;
             Login();
         }
 
@@ -111,8 +125,8 @@ namespace biz.dfch.CS.Activiti.Client
         /// </summary>
         public void Logout()
         {
-            Contract.Requires(_IsLoggedIn == true);
-            base.Logout();
+            this._Client.Credential = new NetworkCredential(String.Empty, String.Empty);
+            this._IsLoggedIn = false;
         }
 
         #endregion Login and Logout end
@@ -196,7 +210,7 @@ namespace biz.dfch.CS.Activiti.Client
                 };
                 request.variables = variables;
                 jrequest = JsonConvert.SerializeObject(request);
-            } 
+            }
             else
             {
                 var request = new ProcessInstanceRequestTenantData()
@@ -307,7 +321,7 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public string GetWorkflowInstanceDetails (string uri)
+        public string GetWorkflowInstanceDetails(string uri)
         {
             var response = _Client.Invoke(uri, _QueryParameters());
             return response;
@@ -333,7 +347,7 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public ProcessExecutionsResponse GetWorkflowExections(string instanceId)
+        public ProcessExecutionsResponse GetWorkflowExecutions(string instanceId)
         {
             var result = GetWorkflowIndepth<ProcessExecutionsResponse>(instanceId, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Executions);
             return result;

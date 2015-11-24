@@ -76,7 +76,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void Login()
         {
             this._ProcessEngine.Login(username, password);
-            Assert.IsTrue(this._ProcessEngine.IsLoggedIn);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
         }
 
         /*
@@ -106,7 +106,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void Logout()
         {
             this._ProcessEngine.Logout();
-            Assert.IsFalse(this._ProcessEngine.IsLoggedIn);
+            Assert.IsFalse(this._ProcessEngine.IsLoggedIn());
         }
         
         [TestMethod]
@@ -118,7 +118,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
             // Act
             this._ProcessEngine.Login(username, password);
-            Assert.IsTrue(this._ProcessEngine.IsLoggedIn);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
             var wdefObj1 = this._ProcessEngine.GetWorkflowDefinitions<ProcessDefinitionsResponse>();
             var wdefObj2 = this._ProcessEngine.GetWorkflowDefinitions();
 
