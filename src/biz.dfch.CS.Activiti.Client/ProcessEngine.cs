@@ -249,14 +249,14 @@ namespace biz.dfch.CS.Activiti.Client
                 }
                 );
             }
-            if ( tenantId == "" )
+            if (tenantId == "")
             {
                 return InvokeWorkflowInstance<ProcessInstanceResponseData>(definitionId, variables);
-            } 
+            }
             else
             {
                 return InvokeWorkflowTenantInstance<ProcessInstanceResponseData>(definitionId, variables, tenantId);
-            }                
+            }
         }
 
         #endregion InvokeWorkflowInstance end
@@ -311,18 +311,23 @@ namespace biz.dfch.CS.Activiti.Client
             var result = GetWorkflowInstance<ProcessInstanceResponseIndepthData>(id);
             if (indepth == true)
             {
+                // get variables
                 result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
+                // get executions
                 var executions = GetWorkflowIndepth<ProcessExecutionsResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Executions);
                 result.executions = executions.data;
                 foreach (var entry in result.executions)
                 {
+                    // get execution indepth details
                     entry.jactivities = GetWorkflowInstanceDetails(String.Format("runtime/executions/{0}/activities", entry.id));
                     //entry.jvariables = GetWorkflowInstanceDetails(String.Format("runtime/executions/{0}/variables", entry.id));
                 }
+                // get tasks
                 var tasks = GetWorkflowIndepth<ProcessTasksResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Tasks);
                 result.tasks = tasks.data;
                 foreach (var entry in result.tasks)
                 {
+                    // get task indepth details
                     entry.jidentitylinks = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/identitylinks", entry.id));
                     entry.jcomments = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/comments", entry.id));
                     entry.jvariables = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/variables", entry.id));
