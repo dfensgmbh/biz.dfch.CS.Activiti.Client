@@ -18,6 +18,7 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net.Sockets;
 using System.Diagnostics.Contracts;
+using Telerik.JustMock;
 
 namespace biz.dfch.CS.Activiti.Client.Tests
 {
@@ -83,7 +84,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
-        [ExpectedException(typeof(Exception), "A wrong username was inappropriately allowed.")]
+        [ExpectedException(typeof(Exception), "Logout failed")]
         public void LogoutFailed()
         {
             ProcessEngine ProcessEngine = new ProcessEngine(serveruri, applicationName);
@@ -98,6 +99,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             this._ProcessEngine.Logout();
             Assert.IsFalse(this._ProcessEngine.IsLoggedIn());
         }
+
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
@@ -114,7 +116,27 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
             // Assert
             Assert.IsNotNull(wdefObj1);
+            Assert.IsTrue(wdefObj1.total > 0);
             Assert.IsNotNull(wdefObj2);
+            Assert.IsTrue(wdefObj2.total > 0);
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void GetWorkflowDefinitionsEmpty()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+            Mock.Arrange(() => _ProcessEngine.GetWorkflowDefinitions<ProcessDefinitionsResponse>()).Returns(new ProcessDefinitionsResponse() { total = 0 });
+            var wdefObj = this._ProcessEngine.GetWorkflowDefinitions();
+
+            // Assert
+            Assert.IsNotNull(wdefObj);
+            Assert.IsTrue(wdefObj.total == 0);
         }
 
         #endregion
