@@ -139,7 +139,7 @@ namespace biz.dfch.CS.Activiti.Client
             return default(ProcessInstanceResponseIndepthData);
         }
 
-        public string GetWorkflowInstanceDetails(string uri)
+        public string InvokeApi(string uri)
         {
             Contract.Requires(!string.IsNullOrEmpty(uri));
             return default(string);

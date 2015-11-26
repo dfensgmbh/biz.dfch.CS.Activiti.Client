@@ -28,8 +28,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Web;
-//using biz.dfch.CS.Utilities.Rest;
-//using HttpMethod = biz.dfch.CS.Utilities.Rest.HttpMethod;
 
 namespace biz.dfch.CS.Activiti.Client
 {
@@ -180,7 +178,6 @@ namespace biz.dfch.CS.Activiti.Client
             using (var cl = new HttpClient())
             {
                 char[] achTrim = { '/' };
-                //var s = String.Format("{0}/{1}/", _UriServer.AbsoluteUri.TrimEnd(achTrim), _UriBase.Trim(achTrim));
                 var s = String.Format("{0}/", _UriServer.AbsoluteUri.TrimEnd(achTrim));
                 cl.BaseAddress = new Uri(s);
                 cl.Timeout = new TimeSpan(0, 0, _TimeoutSec);

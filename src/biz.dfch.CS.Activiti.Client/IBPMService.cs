@@ -62,7 +62,7 @@ namespace biz.dfch.CS.Activiti.Client
 
         ProcessInstanceResponseIndepthData GetWorkflowInstance(string id, bool indepth);
 
-        string GetWorkflowInstanceDetails(string uri);
+        string InvokeApi(string uri);
 
         T GetWorkflowIndepth<T>(string instanceId, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth Indepth);
 

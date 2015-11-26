@@ -319,7 +319,7 @@ namespace biz.dfch.CS.Activiti.Client
                 foreach (var entry in result.executions)
                 {
                     // get execution indepth details
-                    entry.jactivities = GetWorkflowInstanceDetails(String.Format("runtime/executions/{0}/activities", entry.id));
+                    entry.jactivities = InvokeApi(String.Format("runtime/executions/{0}/activities", entry.id));
                     //entry.jvariables = GetWorkflowInstanceDetails(String.Format("runtime/executions/{0}/variables", entry.id));
                 }
                 // get tasks
@@ -328,17 +328,17 @@ namespace biz.dfch.CS.Activiti.Client
                 foreach (var entry in result.tasks)
                 {
                     // get task indepth details
-                    entry.jidentitylinks = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/identitylinks", entry.id));
-                    entry.jcomments = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/comments", entry.id));
-                    entry.jvariables = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/variables", entry.id));
-                    entry.jevents = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/events", entry.id));
-                    entry.jattachments = GetWorkflowInstanceDetails(String.Format("runtime/tasks/{0}/attachments", entry.id));
+                    entry.jidentitylinks = InvokeApi(String.Format("runtime/tasks/{0}/identitylinks", entry.id));
+                    entry.jcomments = InvokeApi(String.Format("runtime/tasks/{0}/comments", entry.id));
+                    entry.jvariables = InvokeApi(String.Format("runtime/tasks/{0}/variables", entry.id));
+                    entry.jevents = InvokeApi(String.Format("runtime/tasks/{0}/events", entry.id));
+                    entry.jattachments = InvokeApi(String.Format("runtime/tasks/{0}/attachments", entry.id));
                 }
             }
             return result;
         }
 
-        public string GetWorkflowInstanceDetails(string uri)
+        public string InvokeApi(string uri)
         {
             var response = _Client.Invoke(uri, _QueryParameters());
             return response;
