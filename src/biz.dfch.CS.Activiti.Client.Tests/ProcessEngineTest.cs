@@ -92,12 +92,13 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             try
             {
                 this._ProcessEngine.Logout();
+                Assert.Fail();
             }
             catch (Exception)
             {
-
+                // TEst must throw an exception
             }
-            
+
         }
 
         [TestMethod]
@@ -232,6 +233,352 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
             // Assert
         }
+
+        #region Feature: Get Return of invoked (and completed) Workflow #7
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void GetWorkflowResultFromCompletedWorkflow()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            // Do the test...
+            Assert.Fail();
+            // GIVEN 
+            //  Client c1 is connected
+            //  AND activiti server is available
+            //  AND workflow instance wfi1 is available
+            //  AND wfi1 has state completed
+            //WHEN 
+            //  c1 call get workflow results with workflow instance id of wfi1
+            //THEN
+            //  c1 get an workflow instance result object
+
+
+
+            // Assert
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void GetWorkflowResultFromCompletedWorkflow()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            // Do the test...
+            Assert.Fail();
+            // GIVEN 
+            //  Client c1 is connected
+            //  AND activiti server is available
+            //  AND workflow instance wfi1 is available
+            //  AND wfi1 has state ended 
+            //WHEN 
+            //  c1 call get workflow results with workflow instance id of wfi1
+            //THEN
+            //  c1 get an workflow instance result object
+
+
+
+            // Assert
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void GetWorkflowResultFromFailedWorkflow()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            // Do the test...
+            Assert.Fail();
+            // GIVEN 
+            //  Client c1 is connected
+            //  AND activiti server is available
+            //  AND workflow instance wfi1 is available
+            //  AND wfi1 has state failed 
+            //WHEN 
+            //  c1 call get workflow results with workflow instance id of wfi1
+            //THEN
+            //  c1 get an workflow instance result object
+
+
+
+            // Assert
+        }
+
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void GetWorkflowResultFromSuspendedWorkflow()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            // Do the test...
+            Assert.Fail();
+            // GIVEN 
+            //  Client c1 is connected
+            //  AND activiti server is available
+            //  AND workflow instance wfi1 is available
+            //  AND wfi1 has state failed 
+            //WHEN 
+            //  c1 call get workflow results with workflow instance id of wfi1
+            //THEN
+            //  c1 get an exception
+
+
+
+            // Assert
+        }
+
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void GetWorkflowResultFromRunningWorkflowFail()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            // Do the test...
+            Assert.Fail();
+            // GIVEN 
+            //  Client c1 is connected
+            //  AND activiti server is available
+            //  AND workflow instance wfi1 is available
+            //  AND wfi1 has state running 
+            //WHEN 
+            //  c1 call get workflow results with workflow instance id of wfi1
+            //THEN
+            //  c1 get an exception
+
+
+
+            // Assert
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void GetWorkflowResultWithFalseWorkflowDefinition()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            // Do the test...
+            Assert.Fail();
+            //           GIVEN 
+            //  Client is connected
+            //  AND activiti server is available
+            //WHEN 
+            //  c1 get workflow result from a workflow that not exist
+            //THEN
+            //  c1 get an exception
+
+
+
+            // Assert
+        }
+
+        #endregion
+
+
+        #region "Feature: Cancel Invoked Workflow #6"
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void CancelRunningWorkflow()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            // Do the test...
+            Assert.Fail();
+            // GIVEN 
+            //  Client c1 is connected
+            //  AND activiti server is available
+            //  AND workflow instance wfi1 is available
+            //  AND wfi1 has state running
+            // WHEN 
+            //  c1 call cancel workflow with workflow instance id of wfi1
+            //THEN
+            //  c1 get an workflow instance with actual status
+            //  AND wfi1 status is ended
+
+
+            // Assert
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void CancelSuspendedWorkflow()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            // Do the test...
+            Assert.Fail();
+            // GIVEN 
+            //  Client c1 is connected
+            //  AND activiti server is available
+            //  AND workflow instance wfi1 is available
+            //  AND wfi1 has state suspended
+            //WHEN 
+            //  c1 call cancel workflow with workflow instance id of wfi1
+            //THEN
+            //  c1 get an workflow instance with actual status
+            //  AND wfi1 status is ended
+
+
+            // Assert
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void CancelCompletedWorkflowFail()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            // Do the test...
+            Assert.Fail();
+
+            // GIVEN 
+            //  Client c1 is connected
+            //  AND activiti server is available
+            //  AND workflow instance wfi1 is available
+            //  AND wfi1 has state completed
+            //WHEN 
+            //  c1 call cancel workflow with workflow instance id of wfi1
+            //THEN
+            //  c1 get an exception
+
+            // Assert
+        }
+
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void CancelFailedWorkflowFail()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            // Do the test...
+            Assert.Fail();
+
+            // GIVEN 
+            //  Client c1 is connected
+            //  AND activiti server is available
+            //  AND workflow instance wfi1 is available
+            //  AND wfi1 has state failed
+            //WHEN 
+            //  c1 call cancel workflow with workflow instance id of wfi1
+            //THEN
+            //  c1 get an exception
+
+
+            // Assert
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void CancelEndedWorkflowFail()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            // Do the test...
+            Assert.Fail();
+
+            // GIVEN 
+            //  Client c1 is connected
+            //  AND activiti server is available
+            //  AND workflow instance wfi1 is available
+            //  AND wfi1 has state ended
+            //WHEN 
+            //  c1 call cancel workflow with workflow instance id of wfi1
+            //THEN
+            //  c1 get an exception
+
+
+            // Assert
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void CancelNonExistingWorkflowFail()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            // Do the test...
+            Assert.Fail();
+
+            // GIVEN 
+            //  Client c1 is connected
+            //  AND activiti server is available
+            //WHEN 
+            //  c1 call cancel workflow with a unknown workflow instance id
+            //THEN
+            //  c1 get an exception
+
+
+
+            // Assert
+        }
+
+        #endregion
+
+
 
         #endregion
     }
