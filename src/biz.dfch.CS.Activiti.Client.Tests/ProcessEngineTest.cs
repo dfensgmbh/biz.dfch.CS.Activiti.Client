@@ -266,7 +266,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
-        public void GetWorkflowResultFromCompletedWorkflow()
+        public void GetWorkflowResultFromEndedWorkflow()
         {
             // Arrange
 
