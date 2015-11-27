@@ -24,24 +24,13 @@ d-fens GmbH, General-Guisan-Strasse 6, CH-6300 Zug, Switzerland
 * See [Releases](https://github.com/dfensgmbh/biz.dfch.CS.Activiti.Client/releases) and [Tags](https://github.com/dfensgmbh/biz.dfch.CS.Activiti.Client/tags) on [GitHub](https://github.com/dfensgmbh/biz.dfch.CS.Activiti.Client)
 		</description>
         <summary>A C#/.NET client for the Activiti Workflow Engine</summary>
-        <releaseNotes>20151119
+        <releaseNotes>20151127
 * Initial release
 </releaseNotes>
         <copyright>Copyright © 2015 d-fens GmbH</copyright>
         <tags>dfch Activiti Workflow Client C#</tags>
         <dependencies>
-			<dependency id="biz.dfch.CS.System.Utilities" version="1.2.7" />
-			<dependency id="EntityFramework" version="6.1.3" />
-			<dependency id="log4net" version="2.0.3" />
-			<dependency id="Microsoft.AspNet.WebApi" version="5.2.3" />
-			<dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-			<dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.3" />
-			<dependency id="Microsoft.AspNet.WebApi.OData" version="5.2.0" />
-			<dependency id="Microsoft.AspNet.WebApi.WebHost" version="5.2.3" />
-			<dependency id="Microsoft.Data.Edm" version="5.6.4" />
-			<dependency id="Microsoft.Data.OData" version="5.6.4" />
 			<dependency id="Newtonsoft.Json" version="6.0.8" />
-			<dependency id="System.Spatial" version="5.6.4" />
         </dependencies>
     </metadata>
 	<files>
