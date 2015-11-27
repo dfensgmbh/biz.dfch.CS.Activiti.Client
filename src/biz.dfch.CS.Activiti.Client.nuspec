@@ -13,7 +13,7 @@
         <description>biz.dfch.CS.Activiti.Client
 ========================
 
-A C#/.NET client for the [Activiti Workflow Engine](http://activiti.org/).
+C#/.NET Client for the [Activiti Workflow Engine](http://activiti.org/).
 
 d-fens GmbH, General-Guisan-Strasse 6, CH-6300 Zug, Switzerland
 
@@ -23,17 +23,17 @@ d-fens GmbH, General-Guisan-Strasse 6, CH-6300 Zug, Switzerland
 
 * See [Releases](https://github.com/dfensgmbh/biz.dfch.CS.Activiti.Client/releases) and [Tags](https://github.com/dfensgmbh/biz.dfch.CS.Activiti.Client/tags) on [GitHub](https://github.com/dfensgmbh/biz.dfch.CS.Activiti.Client)
 		</description>
-        <summary>A C#/.NET client for the Activiti Workflow Engine</summary>
+        <summary>C#/.NET Client for the Activiti Workflow Engine</summary>
         <releaseNotes>20151127
 * Initial release
 </releaseNotes>
         <copyright>Copyright © 2015 d-fens GmbH</copyright>
-        <tags>dfch Activiti Workflow Client C#</tags>
+        <tags>dfch Activiti Workflow Client C# BPMN</tags>
         <dependencies>
 			<dependency id="Newtonsoft.Json" version="6.0.8" />
         </dependencies>
     </metadata>
 	<files>
-		<file src="biz.dfch.CS.Activiti.Client\bin\Debug\biz.dfch.CS.Activiti.Client.dll" target="lib\" />
+		<file src="biz.dfch.CS.Activiti.Client\bin\Release\biz.dfch.CS.Activiti.Client.dll" target="lib\" />
 	</files>
 </package>

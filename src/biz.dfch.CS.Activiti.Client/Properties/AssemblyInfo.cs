@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("biz.dfch.CS.Activiti.Client")]
-[assembly: AssemblyDescription("A C#/.NET client for the Activiti workflow engine")]
+[assembly: AssemblyDescription("C#/.NET client for the Activiti workflow engine")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("d-fens GmbH")]
 [assembly: AssemblyProduct("biz.dfch.CS.Activiti.Client")]

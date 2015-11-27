@@ -39,6 +39,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         #region test initialisation and cleanup
 
+        // DFTODO - move to app.config
         protected Uri serveruri = new Uri("http://172.19.115.38:9080/activiti-rest/service"); // "http://192.168.112.129:9000/activiti-rest/service/");
         protected string applicationName = "";
         protected string username = "kermit";
@@ -66,7 +67,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         [ExpectedException(typeof(AggregateException), "Invalid uri.")]
         public void LoginWithInvalidUri()
         {
-            ProcessEngine ProcessEngine = new ProcessEngine(new Uri("http://localhost:9000/activiti-rest/service/"), "InvalidClient");
+            ProcessEngine ProcessEngine = new ProcessEngine(new Uri("http://www.example.com/invalid-uri"), "InvalidClient");
             ProcessEngine.Login("wrongusername", "1234");
         }
 
@@ -157,7 +158,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void InvokeWorkflow()
         {
             // Arrange
-            var definitionid = "currently unknown";
+            var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "long");
             vars.Add("throwException", "true");
@@ -179,7 +180,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void InvokeWorkflowFail()
         {
             // Arrange
-            var definitionid = "createTimersProcess:1:30";
+            var definitionid = "invalid-definitionid:1:30";
             var vars = new Hashtable();
             vars.Add("duration", "long");
             vars.Add("throwException", "true");
@@ -189,6 +190,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             var instanceNew = this._ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
 
             // Assert
+            Assert.Fail("Test should have failed before.");
         }
 
         [TestMethod]
@@ -247,7 +249,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void GetWorkflowResultFromCompletedWorkflow()
         {
             // Arrange
-            var definitionid = "currently unknown";
+            var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "short"); // short=10 seconds?
             vars.Add("throwException", "false");
@@ -277,7 +279,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void GetWorkflowResultFromEndedWorkflow()
         {
             // Arrange
-            var definitionid = "currently unknown";
+            var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "short"); // short=10 seconds?
             vars.Add("throwException", "false");
@@ -305,7 +307,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void GetWorkflowResultFromFailedWorkflow()
         {
             // Arrange
-            var definitionid = "currently unknown";
+            var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "short"); // short=10 seconds?
             vars.Add("throwException", "true");
@@ -342,7 +344,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void GetWorkflowResultFromSuspendedWorkflow()
         {
             // Arrange
-            var definitionid = "currently unknown";
+            var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "short"); // short=10 seconds?
             vars.Add("throwException", "true");
@@ -381,7 +383,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void GetWorkflowResultFromRunningWorkflowFail()
         {
             // Arrange
-            var definitionid = "currently unknown";
+            var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "short"); // short=10 seconds?
             vars.Add("throwException", "true");
@@ -442,7 +444,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void CancelRunningWorkflow()
         {
             // Arrange
-            var definitionid = "currently unknown";
+            var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "short"); // short=10 seconds?
             vars.Add("throwException", "true");
@@ -468,7 +470,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void CancelSuspendedWorkflow()
         {
             // Arrange
-            var definitionid = "currently unknown";
+            var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "short"); // short=10 seconds?
             vars.Add("throwException", "true");
@@ -498,7 +500,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void CancelCompletedWorkflowFail()
         {
             // Arrange
-            var definitionid = "currently unknown";
+            var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "short"); // short=10 seconds?
             vars.Add("throwException", "false");
@@ -527,7 +529,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void CancelFailedWorkflowFail()
         {
             // Arrange
-            var definitionid = "currently unknown";
+            var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "short"); // short=10 seconds?
             vars.Add("throwException", "true");
@@ -559,7 +561,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void CancelEndedWorkflowFail()
         {
             // Arrange
-            var definitionid = "currently unknown";
+            var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "short"); // short=10 seconds?
             vars.Add("throwException", "false");
