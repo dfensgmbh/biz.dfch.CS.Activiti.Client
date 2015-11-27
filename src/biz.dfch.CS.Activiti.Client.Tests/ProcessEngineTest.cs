@@ -22,15 +22,24 @@ using System.Diagnostics.Contracts;
 using Telerik.JustMock;
 using System.Collections;
 using System.Net.Http;
+using System.Linq;
 
 namespace biz.dfch.CS.Activiti.Client.Tests
 {
     [TestClass]
     public class ProcessEngineTest
     {
+
+        #region constants
+
+        const string DEFINITIONKEY_CREATETIMERSPROCESS = "createTimersProcess";
+        const string DEFINITIONKEY_WILLFAIL = "WillFail";
+
+        #endregion
+
         #region test initialisation and cleanup
 
-        protected Uri serveruri = new Uri("http://192.168.112.129:9000/activiti-rest/service/");
+        protected Uri serveruri = new Uri("http://172.19.115.38:9080/activiti-rest/service"); // "http://192.168.112.129:9000/activiti-rest/service/");
         protected string applicationName = "";
         protected string username = "kermit";
         protected string password = "kermit";
@@ -51,12 +60,6 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         #endregion
 
         #region test methods
-
-        [TestMethod]
-        public void Test()
-        {
-
-        }
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
@@ -154,18 +157,21 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void InvokeWorkflow()
         {
             // Arrange
-            var definitionid = "createTimersProcess:1:31";
+            var definitionid = "currently unknown";
             var vars = new Hashtable();
             vars.Add("duration", "long");
             vars.Add("throwException", "true");
 
             // Act
+
             this._ProcessEngine.Login(username, password);
+            definitionid = GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
             var instanceNew = this._ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
 
             // Assert
             Assert.IsNotNull(instanceNew);
         }
+
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
@@ -241,27 +247,29 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void GetWorkflowResultFromCompletedWorkflow()
         {
             // Arrange
-
+            var definitionid = "currently unknown";
+            var vars = new Hashtable();
+            vars.Add("duration", "short"); // short=10 seconds?
+            vars.Add("throwException", "false");
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            // Do the test...
-            Assert.Fail();
-            // GIVEN 
-            //  Client c1 is connected
-            //  AND activiti server is available
-            //  AND workflow instance wfi1 is available
-            //  AND wfi1 has state completed
-            //WHEN 
-            //  c1 call get workflow results with workflow instance id of wfi1
-            //THEN
-            //  c1 get an workflow instance result object
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
-
+            ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
+            System.Threading.Thread.Sleep(15000);
+            ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
 
             // Assert
+            Assert.IsNotNull(instance);
+            Assert.IsNotNull(instance.completed);
+            Assert.IsTrue(instance.completed);
+            Assert.IsNotNull(instance.suspended);
+            Assert.IsNotNull(instance.ended);
+
+
         }
 
         [TestMethod]
@@ -269,27 +277,27 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void GetWorkflowResultFromEndedWorkflow()
         {
             // Arrange
-
+            var definitionid = "currently unknown";
+            var vars = new Hashtable();
+            vars.Add("duration", "short"); // short=10 seconds?
+            vars.Add("throwException", "false");
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            // Do the test...
-            Assert.Fail();
-            // GIVEN 
-            //  Client c1 is connected
-            //  AND activiti server is available
-            //  AND workflow instance wfi1 is available
-            //  AND wfi1 has state ended 
-            //WHEN 
-            //  c1 call get workflow results with workflow instance id of wfi1
-            //THEN
-            //  c1 get an workflow instance result object
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
-
+            ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
+            System.Threading.Thread.Sleep(15000);
+            ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
 
             // Assert
+            Assert.IsNotNull(instance);
+            Assert.IsNotNull(instance.completed);
+            Assert.IsNotNull(instance.suspended);
+            Assert.IsNotNull(instance.ended);
+            Assert.IsTrue(instance.ended);
         }
 
         [TestMethod]
@@ -297,27 +305,35 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void GetWorkflowResultFromFailedWorkflow()
         {
             // Arrange
-
+            var definitionid = "currently unknown";
+            var vars = new Hashtable();
+            vars.Add("duration", "short"); // short=10 seconds?
+            vars.Add("throwException", "true");
+            //string expectedReturnVariable = "returnVariableName from definitionid-workflow"; // TODO: Use a workflow which returns a result
+            //string expectedReturnValue = "expected value"; // TODO: Expected value
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            // Do the test...
-            Assert.Fail();
-            // GIVEN 
-            //  Client c1 is connected
-            //  AND activiti server is available
-            //  AND workflow instance wfi1 is available
-            //  AND wfi1 has state failed 
-            //WHEN 
-            //  c1 call get workflow results with workflow instance id of wfi1
-            //THEN
-            //  c1 get an workflow instance result object
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
-
+            ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
+            System.Threading.Thread.Sleep(11000);
+            ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
+            //ProcessVariableData variable = instance.variables.Where(v => v.name == expectedReturnVariable).FirstOrDefault();
 
             // Assert
+            Assert.IsNotNull(instance);
+            Assert.IsNotNull(instance.completed);
+            Assert.IsNotNull(instance.suspended);
+            Assert.IsNotNull(instance.ended);
+            Assert.IsTrue(instance.ended);
+
+            // TODO: What is the state of a failed workflow? throwing an exception means failed?
+
+            //Assert.IsNotNull(variable);
+            //Assert.IsTrue(variable.value == expectedReturnValue);
         }
 
 
@@ -326,27 +342,37 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void GetWorkflowResultFromSuspendedWorkflow()
         {
             // Arrange
-
+            var definitionid = "currently unknown";
+            var vars = new Hashtable();
+            vars.Add("duration", "short"); // short=10 seconds?
+            vars.Add("throwException", "true");
+            //string expectedReturnVariable = "returnVariableName from definitionid-workflow"; // TODO: Use a workflow which returns a result
+            //string expectedReturnValue = "expected value"; // TODO: Expected value
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            // Do the test...
-            Assert.Fail();
-            // GIVEN 
-            //  Client c1 is connected
-            //  AND activiti server is available
-            //  AND workflow instance wfi1 is available
-            //  AND wfi1 has state failed 
-            //WHEN 
-            //  c1 call get workflow results with workflow instance id of wfi1
-            //THEN
-            //  c1 get an exception
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
+            ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
 
+            ProcessInstanceResponseData suspended = _ProcessEngine.UpdateWorkflowInstance(response.id, ProcessEngine.EnumStatus.Suspend);
+
+            ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
+            //ProcessVariableData variable = instance.variables.Where(v => v.name == expectedReturnVariable).FirstOrDefault();
 
             // Assert
+            Assert.IsNotNull(instance);
+            Assert.IsNotNull(instance.completed);
+            Assert.IsNotNull(instance.suspended);
+            Assert.IsNotNull(instance.ended);
+            Assert.IsTrue(instance.ended);
+
+            // TODO: What is the state of a failed workflow? throwing an exception means failed?
+
+            //Assert.IsNotNull(variable);
+            //Assert.IsTrue(variable.value == expectedReturnValue);
         }
 
 
@@ -355,53 +381,55 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void GetWorkflowResultFromRunningWorkflowFail()
         {
             // Arrange
-
+            var definitionid = "currently unknown";
+            var vars = new Hashtable();
+            vars.Add("duration", "short"); // short=10 seconds?
+            vars.Add("throwException", "true");
+            //string expectedReturnVariable = "returnVariableName from definitionid-workflow"; // TODO: Use a workflow which returns a result
+            //string expectedReturnValue = "expected value"; // TODO: Expected value
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            // Do the test...
-            Assert.Fail();
-            // GIVEN 
-            //  Client c1 is connected
-            //  AND activiti server is available
-            //  AND workflow instance wfi1 is available
-            //  AND wfi1 has state running 
-            //WHEN 
-            //  c1 call get workflow results with workflow instance id of wfi1
-            //THEN
-            //  c1 get an exception
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
-
+            ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
+            ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
 
             // Assert
+            Assert.IsNotNull(instance);
+            Assert.IsNotNull(instance.completed);
+            Assert.IsNotNull(instance.suspended);
+            Assert.IsNotNull(instance.ended);
+            Assert.IsFalse(instance.completed);
+            Assert.IsFalse(instance.suspended);
+            Assert.IsFalse(instance.ended);
+
+
+            // TODO: What is the state of a failed workflow? throwing an exception means failed?
+
+            //Assert.IsNotNull(variable);
+            //Assert.IsTrue(variable.value == expectedReturnValue);
         }
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
-        public void GetWorkflowResultWithFalseWorkflowDefinition()
+        [ExpectedException(typeof(NotSupportedException))]
+        public void GetWorkflowResultWithFalseWorkflowId()
         {
             // Arrange
-
+            string unknownId = "0";
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            // Do the test...
-            Assert.Fail();
-            //           GIVEN 
-            //  Client is connected
-            //  AND activiti server is available
-            //WHEN 
-            //  c1 get workflow result from a workflow that not exist
-            //THEN
-            //  c1 get an exception
-
-
+            ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(unknownId);
+            if (instance == null) throw new NotSupportedException("No workflow exists.");
 
             // Assert
+
         }
 
         #endregion
@@ -414,27 +442,25 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void CancelRunningWorkflow()
         {
             // Arrange
-
+            var definitionid = "currently unknown";
+            var vars = new Hashtable();
+            vars.Add("duration", "short"); // short=10 seconds?
+            vars.Add("throwException", "true");
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            // Do the test...
-            Assert.Fail();
-            // GIVEN 
-            //  Client c1 is connected
-            //  AND activiti server is available
-            //  AND workflow instance wfi1 is available
-            //  AND wfi1 has state running
-            // WHEN 
-            //  c1 call cancel workflow with workflow instance id of wfi1
-            //THEN
-            //  c1 get an workflow instance with actual status
-            //  AND wfi1 status is ended
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
+            ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
+            bool endedBeforeCanceling = response.ended;
+            bool cancelled = _ProcessEngine.DeleteWorkflowInstance(response.id);
 
             // Assert
+
+            Assert.IsTrue(cancelled);
+
         }
 
         [TestMethod]
@@ -442,27 +468,29 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void CancelSuspendedWorkflow()
         {
             // Arrange
-
+            var definitionid = "currently unknown";
+            var vars = new Hashtable();
+            vars.Add("duration", "short"); // short=10 seconds?
+            vars.Add("throwException", "true");
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            // Do the test...
-            Assert.Fail();
-            // GIVEN 
-            //  Client c1 is connected
-            //  AND activiti server is available
-            //  AND workflow instance wfi1 is available
-            //  AND wfi1 has state suspended
-            //WHEN 
-            //  c1 call cancel workflow with workflow instance id of wfi1
-            //THEN
-            //  c1 get an workflow instance with actual status
-            //  AND wfi1 status is ended
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
+            ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
+
+            ProcessInstanceResponseData suspended = _ProcessEngine.UpdateWorkflowInstance(response.id, ProcessEngine.EnumStatus.Suspend);
+
+            bool suspendedBeforeCanceling = suspended.suspended;
+            bool endedBeforeCanceling = suspended.ended;
+            bool cancelled = _ProcessEngine.DeleteWorkflowInstance(response.id);
 
             // Assert
+            Assert.IsTrue(suspendedBeforeCanceling);
+            Assert.IsFalse(endedBeforeCanceling);
+            Assert.IsTrue(cancelled);
         }
 
         [TestMethod]
@@ -470,26 +498,27 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void CancelCompletedWorkflowFail()
         {
             // Arrange
-
+            var definitionid = "currently unknown";
+            var vars = new Hashtable();
+            vars.Add("duration", "short"); // short=10 seconds?
+            vars.Add("throwException", "false");
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            // Do the test...
-            Assert.Fail();
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
-            // GIVEN 
-            //  Client c1 is connected
-            //  AND activiti server is available
-            //  AND workflow instance wfi1 is available
-            //  AND wfi1 has state completed
-            //WHEN 
-            //  c1 call cancel workflow with workflow instance id of wfi1
-            //THEN
-            //  c1 get an exception
+            ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
+            System.Threading.Thread.Sleep(15000); // Wait, till precess finished...
+
+            ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
+            bool completedBeforeCanceling = instance.completed;
+            bool cancelled = _ProcessEngine.DeleteWorkflowInstance(response.id);
 
             // Assert
+            Assert.IsTrue(completedBeforeCanceling);
+            Assert.IsFalse(cancelled);
         }
 
 
@@ -498,27 +527,31 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void CancelFailedWorkflowFail()
         {
             // Arrange
-
+            var definitionid = "currently unknown";
+            var vars = new Hashtable();
+            vars.Add("duration", "short"); // short=10 seconds?
+            vars.Add("throwException", "true");
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            // Do the test...
-            Assert.Fail();
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_WILLFAIL);
 
-            // GIVEN 
-            //  Client c1 is connected
-            //  AND activiti server is available
-            //  AND workflow instance wfi1 is available
-            //  AND wfi1 has state failed
-            //WHEN 
-            //  c1 call cancel workflow with workflow instance id of wfi1
-            //THEN
-            //  c1 get an exception
+            ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
+
+            System.Threading.Thread.Sleep(15000); // Wait, till precess finished...
+
+            ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
+            bool failedBeforeCanceling = !instance.completed && instance.ended; // TODO: What is the state of failed!? response.failed
+
+            Assert.IsTrue(failedBeforeCanceling);
+
+            bool cancelled = _ProcessEngine.DeleteWorkflowInstance(response.id);
 
 
             // Assert
+            Assert.IsFalse(cancelled);
         }
 
         [TestMethod]
@@ -526,59 +559,68 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void CancelEndedWorkflowFail()
         {
             // Arrange
-
+            var definitionid = "currently unknown";
+            var vars = new Hashtable();
+            vars.Add("duration", "short"); // short=10 seconds?
+            vars.Add("throwException", "false");
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            // Do the test...
-            Assert.Fail();
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
-            // GIVEN 
-            //  Client c1 is connected
-            //  AND activiti server is available
-            //  AND workflow instance wfi1 is available
-            //  AND wfi1 has state ended
-            //WHEN 
-            //  c1 call cancel workflow with workflow instance id of wfi1
-            //THEN
-            //  c1 get an exception
+            ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
+            System.Threading.Thread.Sleep(15000);
+
+            ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
+            bool endedBeforeCanceling = instance.ended;
+
+            Assert.IsTrue(endedBeforeCanceling);
+
+            bool cancelled = _ProcessEngine.DeleteWorkflowInstance(response.id);
 
 
             // Assert
+            Assert.IsFalse(cancelled);
         }
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
         public void CancelNonExistingWorkflowFail()
         {
-            // Arrange
-
+            // Arranged
+            string unknownId = "0";
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            // Do the test...
-            Assert.Fail();
-
-            // GIVEN 
-            //  Client c1 is connected
-            //  AND activiti server is available
-            //WHEN 
-            //  c1 call cancel workflow with a unknown workflow instance id
-            //THEN
-            //  c1 get an exception
-
-
-
+            bool deleted = _ProcessEngine.DeleteWorkflowInstance(unknownId);
             // Assert
+
+            Assert.IsFalse(deleted);
         }
 
         #endregion
 
 
+
+        #endregion
+
+        #region Helpers
+
+        /// <summary>
+        /// Returns the definitionid of a given definitionkey.
+        /// </summary>
+        /// <param name="definitionkey">Something like createTimersProcess (see const  DEFINITIONKEY_CREATETIMERSPROCESS)</param>
+        /// <returns> Something like "createTimersProcess:1:31" (version can change)</returns>
+        private string GetDefinitionId(string definitionkey)
+        {
+            ProcessDefinitionsResponse definitions = this._ProcessEngine.GetWorkflowDefinitions();
+
+            return definitions.data.Where(d => d.key == definitionkey).FirstOrDefault().id;
+        }
 
         #endregion
     }

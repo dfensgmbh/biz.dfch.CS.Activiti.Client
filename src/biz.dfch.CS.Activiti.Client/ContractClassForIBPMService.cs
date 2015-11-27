@@ -175,9 +175,10 @@ namespace biz.dfch.CS.Activiti.Client
             return default(ProcessInstanceResponseData);
         }
 
-        public void DeleteWorkflowInstance(string id)
+        public bool DeleteWorkflowInstance(string id)
         {
             Contract.Requires(!string.IsNullOrEmpty(id));
+            return default(bool);
         }
 
         #endregion

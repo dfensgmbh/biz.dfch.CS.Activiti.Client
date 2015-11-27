@@ -74,7 +74,7 @@ namespace biz.dfch.CS.Activiti.Client
 
         ProcessInstanceResponseData UpdateWorkflowInstance(string id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumStatus status);
 
-        void DeleteWorkflowInstance(string id);
+        bool DeleteWorkflowInstance(string id);
 
     }
 }

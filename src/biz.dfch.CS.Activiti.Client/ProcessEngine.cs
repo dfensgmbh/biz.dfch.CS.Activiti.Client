@@ -307,7 +307,7 @@ namespace biz.dfch.CS.Activiti.Client
             {
                 result = GetWorkflowInstance<ProcessInstanceResponseData>(id, false);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 result = GetWorkflowInstance<ProcessInstanceResponseData>(id, true);
                 result.completed = true;
@@ -439,12 +439,21 @@ namespace biz.dfch.CS.Activiti.Client
 
         #region DeleteWorkflowInstance
 
-        public void DeleteWorkflowInstance(string id)
+        public bool DeleteWorkflowInstance(string id)
         {
             Contract.Requires(id != null);
 
             var uri = string.Format("runtime/process-instances/{0}", id);
-            var response = _Client.Invoke("DELETE", uri, null, null, null);
+            try
+            {
+                var response = _Client.Invoke("DELETE", uri, null, null, null);
+                return response == string.Empty;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+          
         }
 
         #endregion DeleteWorkflowInstance end
