@@ -347,7 +347,7 @@ namespace biz.dfch.CS.Activiti.Client
                 foreach (var entry in result.executions)
                 {
                     // get execution indepth details
-                    entry.jactivities = InvokeApi(String.Format("runtime/executions/{0}/activities", entry.id));
+                    entry.jactivities = Invoke(String.Format("runtime/executions/{0}/activities", entry.id));
                     //entry.jvariables = GetWorkflowInstanceDetails(String.Format("runtime/executions/{0}/variables", entry.id));
                 }
                 // get tasks
@@ -358,17 +358,17 @@ namespace biz.dfch.CS.Activiti.Client
                     //history/historic-process-instances
                     //history/historic-task-instances
                     // get task indepth details
-                    entry.jidentitylinks = InvokeApi(String.Format("runtime/tasks/{0}/identitylinks", entry.id));
-                    entry.jcomments = InvokeApi(String.Format("runtime/tasks/{0}/comments", entry.id));
-                    entry.jvariables = InvokeApi(String.Format("runtime/tasks/{0}/variables", entry.id));
-                    entry.jevents = InvokeApi(String.Format("runtime/tasks/{0}/events", entry.id));
-                    entry.jattachments = InvokeApi(String.Format("runtime/tasks/{0}/attachments", entry.id));
+                    entry.jidentitylinks = Invoke(String.Format("runtime/tasks/{0}/identitylinks", entry.id));
+                    entry.jcomments = Invoke(String.Format("runtime/tasks/{0}/comments", entry.id));
+                    entry.jvariables = Invoke(String.Format("runtime/tasks/{0}/variables", entry.id));
+                    entry.jevents = Invoke(String.Format("runtime/tasks/{0}/events", entry.id));
+                    entry.jattachments = Invoke(String.Format("runtime/tasks/{0}/attachments", entry.id));
                 }
             }
             return result;
         }
 
-        public string InvokeApi(string uri)
+        public string Invoke(string uri)
         {
             var response = _Client.Invoke(uri, _QueryParameters());
             return response;
