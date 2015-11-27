@@ -289,11 +289,11 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public T GetWorkflowInstance<T>(string id)
+        public T GetWorkflowInstance<T>(string id, bool completed)
         {
             Contract.Requires(id != null);
 
-            var uri = string.Format("runtime/process-instances/{0}", id);
+            var uri = completed ? string.Format("history/historic-process-instances/{0}", id) : string.Format("runtime/process-instances/{0}", id);
             var response = _Client.Invoke(uri);
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
@@ -302,13 +302,41 @@ namespace biz.dfch.CS.Activiti.Client
 
         public ProcessInstanceResponseData GetWorkflowInstance(string id)
         {
-            var result = GetWorkflowInstance<ProcessInstanceResponseData>(id);
+            ProcessInstanceResponseData result;
+            try
+            {
+                result = GetWorkflowInstance<ProcessInstanceResponseData>(id, false);
+            }
+            catch (Exception)
+            {
+                result = GetWorkflowInstance<ProcessInstanceResponseData>(id, true);
+                result.completed = true;
+                result.ended = true;
+                result.suspended = false;
+            }
+            
             return result;
         }
 
         public ProcessInstanceResponseIndepthData GetWorkflowInstance(string id, bool indepth)
         {
-            var result = GetWorkflowInstance<ProcessInstanceResponseIndepthData>(id);
+            ProcessInstanceResponseIndepthData result;
+            string uriBase;
+            try
+            {
+                result = GetWorkflowInstance<ProcessInstanceResponseIndepthData>(id, false);
+                uriBase = "runtime";
+            }
+            catch (Exception)
+            {
+                result = GetWorkflowInstance<ProcessInstanceResponseIndepthData>(id, true);
+                result.completed = true;
+                result.ended = true;
+                result.suspended = false;
+                uriBase = "history/historic-process-instances";
+                indepth = false;
+            }
+
             if (indepth == true)
             {
                 // get variables
@@ -327,6 +355,8 @@ namespace biz.dfch.CS.Activiti.Client
                 result.tasks = tasks.data;
                 foreach (var entry in result.tasks)
                 {
+                    //history/historic-process-instances
+                    //history/historic-task-instances
                     // get task indepth details
                     entry.jidentitylinks = InvokeApi(String.Format("runtime/tasks/{0}/identitylinks", entry.id));
                     entry.jcomments = InvokeApi(String.Format("runtime/tasks/{0}/comments", entry.id));

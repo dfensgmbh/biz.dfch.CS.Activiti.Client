@@ -38,6 +38,16 @@ namespace biz.dfch.CS.Activiti.Client
         public string tenantId { get; set; }
         public List<ProcessVariableData> variables { get; set; }
 
+        public string startUserId { get; set; }
+        public string startActivityId { get; set; }
+        public string endActivityId { get; set; }
+        public string deleteReason { get; set; }        
+        public string startTime { get; set; }
+        public string endTime { get; set; }
+        public string superProcessInstanceId { get; set; }
+        public long durationInMillis { get; set; }
+
+
     }
 
 }

@@ -121,7 +121,7 @@ namespace biz.dfch.CS.Activiti.Client
             return default(T);
         }
 
-        public T GetWorkflowInstance<T>(string id)
+        public T GetWorkflowInstance<T>(string id, bool completed)
         {
             Contract.Requires(!string.IsNullOrEmpty(id));
             return default(T);
