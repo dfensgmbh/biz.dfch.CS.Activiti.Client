@@ -609,7 +609,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         [TestMethod]
         public void TestMethod()
         {
-            
+            // There has to be at least one test without annotation '[TestCategory("SkipOnTeamCity")]' per project
         }
 
         #endregion
