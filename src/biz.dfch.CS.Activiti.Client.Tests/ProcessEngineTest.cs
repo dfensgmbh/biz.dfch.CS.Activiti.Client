@@ -606,7 +606,11 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         #endregion
 
-
+        [TestMethod]
+        public void TestMethod()
+        {
+            
+        }
 
         #endregion
 
