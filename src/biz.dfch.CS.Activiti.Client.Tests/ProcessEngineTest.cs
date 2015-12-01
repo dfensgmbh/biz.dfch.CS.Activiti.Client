@@ -261,7 +261,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(15000);
+            System.Threading.Thread.Sleep(30000);
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
 
             // Assert
@@ -291,7 +291,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(15000);
+            System.Threading.Thread.Sleep(30000);
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
 
             // Assert
@@ -321,7 +321,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(11000);
+            System.Threading.Thread.Sleep(30000);
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
             //ProcessVariableData variable = instance.variables.Where(v => v.name == expectedReturnVariable).FirstOrDefault();
 
@@ -330,12 +330,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             Assert.IsNotNull(instance.completed);
             Assert.IsNotNull(instance.suspended);
             Assert.IsNotNull(instance.ended);
-            Assert.IsTrue(instance.ended);
-
-            // TODO: What is the state of a failed workflow? throwing an exception means failed?
-
-            //Assert.IsNotNull(variable);
-            //Assert.IsTrue(variable.value == expectedReturnValue);
+            Assert.IsFalse(instance.ended); // A failed workflow is not ended
         }
 
 
@@ -369,12 +364,8 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             Assert.IsNotNull(instance.completed);
             Assert.IsNotNull(instance.suspended);
             Assert.IsNotNull(instance.ended);
-            Assert.IsTrue(instance.ended);
+            Assert.IsTrue(instance.suspended);
 
-            // TODO: What is the state of a failed workflow? throwing an exception means failed?
-
-            //Assert.IsNotNull(variable);
-            //Assert.IsTrue(variable.value == expectedReturnValue);
         }
 
 
@@ -512,7 +503,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(15000); // Wait, till precess finished...
+            System.Threading.Thread.Sleep(30000); // Wait, till precess finished...
 
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
             bool completedBeforeCanceling = instance.completed;
@@ -538,22 +529,21 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            definitionid = this.GetDefinitionId(DEFINITIONKEY_WILLFAIL);
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
 
-            System.Threading.Thread.Sleep(15000); // Wait, till precess finished...
+            System.Threading.Thread.Sleep(30000); // Wait, till precess finished...
 
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
-            bool failedBeforeCanceling = !instance.completed && instance.ended; // TODO: What is the state of failed!? response.failed
+            bool failedBeforeCanceling = !instance.completed && !instance.ended;
 
             Assert.IsTrue(failedBeforeCanceling);
 
             bool cancelled = _ProcessEngine.DeleteWorkflowInstance(response.id);
 
-
             // Assert
-            Assert.IsFalse(cancelled);
+            Assert.IsTrue(cancelled);
         }
 
         [TestMethod]
@@ -573,7 +563,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(15000);
+            System.Threading.Thread.Sleep(30000);
 
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
             bool endedBeforeCanceling = instance.ended;
