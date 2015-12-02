@@ -34,6 +34,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         const string DEFINITIONKEY_CREATETIMERSPROCESS = "createTimersProcess";
         const string DEFINITIONKEY_WILLFAIL = "WillFail";
+        const int WAIT_TIMEOUT_MILLISECONDS = 30000;
 
         #endregion
 
@@ -261,7 +262,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(30000);
+            System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS);
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
 
             // Assert
@@ -291,7 +292,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(30000);
+            System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS);
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
 
             // Assert
@@ -321,7 +322,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(30000);
+            System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS);
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
             //ProcessVariableData variable = instance.variables.Where(v => v.name == expectedReturnVariable).FirstOrDefault();
 
@@ -503,7 +504,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(30000); // Wait, till precess finished...
+            System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS); // Wait, till precess finished...
 
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
             bool completedBeforeCanceling = instance.completed;
@@ -533,7 +534,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
 
-            System.Threading.Thread.Sleep(30000); // Wait, till precess finished...
+            System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS); // Wait, till precess finished...
 
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
             bool failedBeforeCanceling = !instance.completed && !instance.ended;
@@ -563,7 +564,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(30000);
+            System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS);
 
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
             bool endedBeforeCanceling = instance.ended;
