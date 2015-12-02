@@ -175,6 +175,12 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="definitionId">createTimersProcess:1:36</param>
+        /// <returns></returns>
         public T GetWorkflowDefinition<T>(string definitionId)
         {
             Contract.Requires(definitionId != null);
@@ -191,6 +197,19 @@ namespace biz.dfch.CS.Activiti.Client
             var result = GetWorkflowDefinition<ProcessDefinitionResponseData>(definitionId);
             return result;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key">createTimersProcess</param>
+        /// <returns></returns>
+        public ProcessDefinitionResponseData GetWorkflowDefinitionByKey(string key)
+        {
+            Contract.Requires(key != null);
+
+            var result = GetWorkflowDefinitions();
+            return result.data.Where(d => d.key == key).FirstOrDefault();
+       }
 
         #endregion GetWorkflowDefinition(s) end
 
@@ -314,7 +333,7 @@ namespace biz.dfch.CS.Activiti.Client
                 result.ended = true;
                 result.suspended = false;
             }
-            
+
             return result;
         }
 
@@ -453,12 +472,11 @@ namespace biz.dfch.CS.Activiti.Client
             {
                 return false;
             }
-          
+
         }
 
         #endregion DeleteWorkflowInstance end
 
         #endregion
-
     }
 }

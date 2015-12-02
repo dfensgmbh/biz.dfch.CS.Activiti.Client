@@ -138,6 +138,45 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
+        public void GetWorkflowDefinitionById()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+            ProcessDefinitionsResponse definitions = this._ProcessEngine.GetWorkflowDefinitions();
+            ProcessDefinitionResponseData def1 = definitions.data.FirstOrDefault();
+            ProcessDefinitionResponseData def2 = this._ProcessEngine.GetWorkflowDefinition(def1.id);
+
+            // Assert
+            Assert.IsNotNull(def1);
+            Assert.IsNotNull(def2);
+            Assert.IsTrue(def1.id == def2.id);
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void GetWorkflowDefinitionByKey()
+        {
+            // Arrange
+            
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+            ProcessDefinitionsResponse definitions = this._ProcessEngine.GetWorkflowDefinitions();
+            ProcessDefinitionResponseData def1 = definitions.data.FirstOrDefault();
+            ProcessDefinitionResponseData def2 = this._ProcessEngine.GetWorkflowDefinitionByKey(def1.key);
+
+            // Assert
+            Assert.IsNotNull(def1);
+            Assert.IsNotNull(def2);
+            Assert.IsTrue(def1.key == def2.key);
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
         public void GetWorkflowDefinitionsEmpty()
         {
             // Arrange
