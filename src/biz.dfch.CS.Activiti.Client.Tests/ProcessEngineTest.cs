@@ -65,11 +65,20 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
-        [ExpectedException(typeof(AggregateException), "Invalid uri.")]
         public void LoginWithInvalidUri()
         {
-            ProcessEngine ProcessEngine = new ProcessEngine(new Uri("http://www.example.com/invalid-uri"), "InvalidClient");
-            ProcessEngine.Login("wrongusername", "1234");
+            ProcessEngine processEngine = new ProcessEngine(new Uri("http://www.example.com/invalid-uri"), "InvalidClient");
+            try
+            {
+                processEngine.Login("wrongusername", "1234");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsNotNull(processEngine);
+                Assert.IsTrue(ex.Message == "Response status code does not indicate success: 404 (Not Found).");
+        
+            }
+            
         }
 
         [TestMethod]
@@ -161,7 +170,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void GetWorkflowDefinitionByKey()
         {
             // Arrange
-            
+
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
@@ -439,16 +448,10 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             Assert.IsFalse(instance.suspended);
             Assert.IsFalse(instance.ended);
 
-
-            // TODO: What is the state of a failed workflow? throwing an exception means failed?
-
-            //Assert.IsNotNull(variable);
-            //Assert.IsTrue(variable.value == expectedReturnValue);
         }
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
-        [ExpectedException(typeof(NotSupportedException))]
         public void GetWorkflowResultWithFalseWorkflowId()
         {
             // Arrange
@@ -457,9 +460,18 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+            ProcessInstanceResponseData instance = null;
+            try
+            {
+                 instance = _ProcessEngine.GetWorkflowInstance(unknownId);
+                 Assert.Fail("We should never reach this line...");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsNull(instance);
+                Assert.IsTrue(ex.Message == "Response status code does not indicate success: 404 (Not Found).");
+            }
 
-            ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(unknownId);
-            if (instance == null) throw new NotSupportedException("No workflow exists.");
 
             // Assert
 
