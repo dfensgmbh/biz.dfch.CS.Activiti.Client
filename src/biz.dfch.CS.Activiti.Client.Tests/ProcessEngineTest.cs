@@ -34,6 +34,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         const string DEFINITIONKEY_CREATETIMERSPROCESS = "createTimersProcess";
         const string DEFINITIONKEY_WILLFAIL = "WillFail";
+        const int WAIT_TIMEOUT_MILLISECONDS = 30000;
 
         #endregion
 
@@ -64,11 +65,20 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
-        [ExpectedException(typeof(AggregateException), "Invalid uri.")]
         public void LoginWithInvalidUri()
         {
-            ProcessEngine ProcessEngine = new ProcessEngine(new Uri("http://www.example.com/invalid-uri"), "InvalidClient");
-            ProcessEngine.Login("wrongusername", "1234");
+            ProcessEngine processEngine = new ProcessEngine(new Uri("http://www.example.com/invalid-uri"), "InvalidClient");
+            try
+            {
+                processEngine.Login("wrongusername", "1234");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsNotNull(processEngine);
+                Assert.IsTrue(ex.Message == "Response status code does not indicate success: 404 (Not Found).");
+        
+            }
+            
         }
 
         [TestMethod]
@@ -133,6 +143,45 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             Assert.IsTrue(wdefObj1.total > 0);
             Assert.IsNotNull(wdefObj2);
             Assert.IsTrue(wdefObj2.total > 0);
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void GetWorkflowDefinitionById()
+        {
+            // Arrange
+
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+            ProcessDefinitionsResponse definitions = this._ProcessEngine.GetWorkflowDefinitions();
+            ProcessDefinitionResponseData def1 = definitions.data.FirstOrDefault();
+            ProcessDefinitionResponseData def2 = this._ProcessEngine.GetWorkflowDefinition(def1.id);
+
+            // Assert
+            Assert.IsNotNull(def1);
+            Assert.IsNotNull(def2);
+            Assert.IsTrue(def1.id == def2.id);
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void GetWorkflowDefinitionByKey()
+        {
+            // Arrange
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+            ProcessDefinitionsResponse definitions = this._ProcessEngine.GetWorkflowDefinitions();
+            ProcessDefinitionResponseData def1 = definitions.data.FirstOrDefault();
+            ProcessDefinitionResponseData def2 = this._ProcessEngine.GetWorkflowDefinitionByKey(def1.key);
+
+            // Assert
+            Assert.IsNotNull(def1);
+            Assert.IsNotNull(def2);
+            Assert.IsTrue(def1.key == def2.key);
         }
 
         [TestMethod]
@@ -261,7 +310,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(30000);
+            System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS);
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
 
             // Assert
@@ -291,7 +340,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(30000);
+            System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS);
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
 
             // Assert
@@ -321,7 +370,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(30000);
+            System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS);
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
             //ProcessVariableData variable = instance.variables.Where(v => v.name == expectedReturnVariable).FirstOrDefault();
 
@@ -399,16 +448,10 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             Assert.IsFalse(instance.suspended);
             Assert.IsFalse(instance.ended);
 
-
-            // TODO: What is the state of a failed workflow? throwing an exception means failed?
-
-            //Assert.IsNotNull(variable);
-            //Assert.IsTrue(variable.value == expectedReturnValue);
         }
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
-        [ExpectedException(typeof(NotSupportedException))]
         public void GetWorkflowResultWithFalseWorkflowId()
         {
             // Arrange
@@ -417,9 +460,18 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+            ProcessInstanceResponseData instance = null;
+            try
+            {
+                 instance = _ProcessEngine.GetWorkflowInstance(unknownId);
+                 Assert.Fail("We should never reach this line...");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsNull(instance);
+                Assert.IsTrue(ex.Message == "Response status code does not indicate success: 404 (Not Found).");
+            }
 
-            ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(unknownId);
-            if (instance == null) throw new NotSupportedException("No workflow exists.");
 
             // Assert
 
@@ -503,7 +555,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(30000); // Wait, till precess finished...
+            System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS); // Wait, till precess finished...
 
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
             bool completedBeforeCanceling = instance.completed;
@@ -533,7 +585,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
 
-            System.Threading.Thread.Sleep(30000); // Wait, till precess finished...
+            System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS); // Wait, till precess finished...
 
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
             bool failedBeforeCanceling = !instance.completed && !instance.ended;
@@ -563,7 +615,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
-            System.Threading.Thread.Sleep(30000);
+            System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS);
 
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
             bool endedBeforeCanceling = instance.ended;
@@ -596,7 +648,11 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         #endregion
 
-
+        [TestMethod]
+        public void TestMethod()
+        {
+            // There has to be at least one test without annotation '[TestCategory("SkipOnTeamCity")]' per project
+        }
 
         #endregion
 
