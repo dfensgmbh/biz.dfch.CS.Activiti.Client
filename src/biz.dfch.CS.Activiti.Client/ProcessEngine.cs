@@ -297,12 +297,13 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public T GetWorkflowInstanceVariables<T>(string id)
+        public T GetWorkflowInstanceVariables<T>(string id, bool completed)
         {
             Contract.Requires(id != null);
 
-            var uri = string.Format("runtime/process-instances/{0}/variables", id);
-            var response = _Client.Invoke(uri, _QueryParameters());
+            var uri = completed ? string.Format("history/historic-variable-instances?processInstanceId={0}", id) : string.Format("runtime/process-instances/{0}/variables", id);
+            var response = _Client.Invoke(uri);
+            //var response = _Client.Invoke(uri, _QueryParameters());
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
@@ -340,11 +341,9 @@ namespace biz.dfch.CS.Activiti.Client
         public ProcessInstanceResponseIndepthData GetWorkflowInstance(string id, bool indepth)
         {
             ProcessInstanceResponseIndepthData result;
-            string uriBase;
             try
             {
                 result = GetWorkflowInstance<ProcessInstanceResponseIndepthData>(id, false);
-                uriBase = "runtime";
             }
             catch (Exception)
             {
@@ -352,14 +351,25 @@ namespace biz.dfch.CS.Activiti.Client
                 result.completed = true;
                 result.ended = true;
                 result.suspended = false;
-                uriBase = "history/historic-process-instances";
+                ProcessHistoricVariableInstancesResponse historicVariableInstances = GetWorkflowInstanceVariables<ProcessHistoricVariableInstancesResponse>(id, true);
+                var variables = new List<ProcessVariableData>();
+                foreach (ProcessHistoricInstancesResponse historicVariableInstance in historicVariableInstances.data)
+                {
+                    variables.Add(new ProcessVariableData()
+                    {
+                        name = historicVariableInstance.variable.name.ToString(),
+                        value = historicVariableInstance.variable.value.ToString()
+                    }
+                    );
+                }
+                result.variables = variables;
                 indepth = false;
             }
 
             if (indepth == true)
             {
                 // get variables
-                result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
+                result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id, false);
                 // get executions
                 var executions = GetWorkflowIndepth<ProcessExecutionsResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Executions);
                 result.executions = executions.data;
@@ -450,7 +460,7 @@ namespace biz.dfch.CS.Activiti.Client
         public ProcessInstanceResponseData UpdateWorkflowInstance(string id, EnumStatus status)
         {
             var result = UpdateWorkflowInstance<ProcessInstanceResponseData>(id, status);
-            result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
+            result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id, false);
             return result;
         }
 

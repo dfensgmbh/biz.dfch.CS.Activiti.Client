@@ -54,7 +54,7 @@ namespace biz.dfch.CS.Activiti.Client
 
         ProcessInstancesResponse GetWorkflowInstances();
 
-        T GetWorkflowInstanceVariables<T>(string id);
+        T GetWorkflowInstanceVariables<T>(string id, bool completed);
 
         T GetWorkflowInstance<T>(string id, bool completed);
 
