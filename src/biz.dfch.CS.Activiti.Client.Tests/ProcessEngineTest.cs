@@ -23,6 +23,7 @@ using Telerik.JustMock;
 using System.Collections;
 using System.Net.Http;
 using System.Linq;
+using System.IO;
 
 namespace biz.dfch.CS.Activiti.Client.Tests
 {
@@ -32,8 +33,9 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         #region constants
 
-        const string DEFINITIONKEY_CREATETIMERSPROCESS = "createTimersProcess";
-        const string DEFINITIONKEY_WILLFAIL = "WillFail";
+        // This process definition is cerated in the unit tests if it does not exist and removed at the end.
+        const string DEFINITIONKEY_CREATETIMERSPROCESS = "createTimersProcessUnitTests";
+
         const int WAIT_TIMEOUT_MILLISECONDS = 30000;
 
         #endregion
@@ -56,7 +58,20 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         [TestCleanup]
         public void TestCleanup()
         {
+            DeploymentResponse deployments = this._ProcessEngine.GetDeployments();
 
+            foreach (string f in Directory.GetFiles("Resources"))
+            {
+                string fileName = Path.GetFileName(f);
+
+                foreach (DeploymentResponseData d in deployments.data.Where(d => d.name == fileName))
+                {
+                    if (d != null)
+                    {
+                        bool deleted = this._ProcessEngine.DeleteDeployment(d.id);
+                    }
+                }
+            }
         }
 
         #endregion
@@ -76,9 +91,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             {
                 Assert.IsNotNull(processEngine);
                 Assert.IsTrue(ex.Message == "Response status code does not indicate success: 404 (Not Found).");
-        
             }
-            
         }
 
         [TestMethod]
@@ -88,7 +101,6 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         {
             this._ProcessEngine.Login("wrongusername", "1234");
         }
-
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
@@ -112,7 +124,6 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             {
                 // TEst must throw an exception
             }
-
         }
 
         [TestMethod]
@@ -124,13 +135,179 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             Assert.IsFalse(this._ProcessEngine.IsLoggedIn());
         }
 
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void GetDeployments()
+        {
+            // Arrange
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+            DeploymentResponse response = this._ProcessEngine.GetDeployments();
+
+            // Assert
+            Assert.IsNotNull(response);
+
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void CreateDeploymentWithByteArray()
+        {
+            // Arrange
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            string filename = @"Resources\HelloWorldBProcess.bpmn20.xml";
+
+            byte[] bytes = File.ReadAllBytes(filename);
+            DeploymentResponseData response = this._ProcessEngine.CreateDeployment(filename, bytes);
+
+            // Assert
+            Assert.IsNotNull(response);
+            int id = 0;
+            Assert.IsTrue(int.TryParse(response.id, out id));
+            Assert.IsTrue(id > 0);
+            Assert.IsTrue(response.name == Path.GetFileName(filename));
+
+            // Delete it
+            bool deleted = this._ProcessEngine.DeleteDeployment(response.id);
+            Assert.IsTrue(deleted);
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void CreateDeploymentWithFilename()
+        {
+            // Arrange
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            try
+            {
+                string filename = @"Resources\HelloWorldAProcess.bpmn20.xml";
+
+                DeploymentResponseData response = this._ProcessEngine.CreateDeployment(filename, Path.GetFileName(filename));
+
+                // Assert
+                Assert.IsNotNull(response);
+                int id = 0;
+                Assert.IsTrue(int.TryParse(response.id, out id));
+                Assert.IsTrue(id > 0);
+                Assert.IsTrue(response.name == Path.GetFileName(filename));
+
+                // Delete it
+                bool deleted = this._ProcessEngine.DeleteDeployment(response.id);
+                Assert.IsTrue(deleted);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Unexpected error: " + ex.ToString());
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void CreateDeploymentWithFilenameSleepAMinute()
+        {
+            // Arrange
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            try
+            {
+                string filename = @"Resources\SleepAMinuteProcess.bpmn20.xml";
+
+                DeploymentResponseData response = this._ProcessEngine.CreateDeployment(filename, Path.GetFileName(filename));
+
+                // Assert
+                Assert.IsNotNull(response);
+                int id = 0;
+                Assert.IsTrue(int.TryParse(response.id, out id));
+                Assert.IsTrue(id > 0);
+                Assert.IsTrue(response.name == Path.GetFileName(filename));
+
+                // Delete it
+                bool deleted = this._ProcessEngine.DeleteDeployment(response.id);
+                Assert.IsTrue(deleted);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Unexpected error: " + ex.ToString());
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void CreateDeploymentWithZIPFilename()
+        {
+            // Arrange
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            try
+            {
+                string zipFileName = @"Resources\zipFile.zip";
+
+                DeploymentResponseData response = this._ProcessEngine.CreateDeployment(zipFileName, Path.GetFileName(zipFileName));
+
+                // Assert
+                Assert.IsNotNull(response);
+                int id = 0;
+                Assert.IsTrue(int.TryParse(response.id, out id));
+                Assert.IsTrue(id > 0);
+                Assert.IsTrue(response.name == Path.GetFileName(zipFileName));
+
+                // Delete it
+                bool deleted = this._ProcessEngine.DeleteDeployment(response.id);
+                Assert.IsTrue(deleted);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Unexpected error: " + ex.ToString());
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("SkipOnTeamCity")]
+        public void DeleteDeployment()
+        {
+            // Arrange
+
+            // Act
+            this._ProcessEngine.Login(username, password);
+            Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
+
+            string filename = @"Resources\HelloWorldAProcess.bpmn20.xml";
+
+            byte[] bytes = File.ReadAllBytes(filename);
+            DeploymentResponseData response = this._ProcessEngine.CreateDeployment(filename, bytes);
+
+            // Assert
+            Assert.IsNotNull(response);
+            int id = 0;
+            Assert.IsTrue(int.TryParse(response.id, out id));
+            Assert.IsTrue(id > 0);
+            Assert.IsTrue(response.name == Path.GetFileName(filename));
+
+            bool deleted = this._ProcessEngine.DeleteDeployment(response.id);
+            Assert.IsTrue(deleted);
+        }
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
         public void GetWorkflowDefinitions()
         {
             // Arrange
-
 
             // Act
             this._ProcessEngine.Login(username, password);
@@ -210,7 +387,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "long");
-            vars.Add("throwException", "true");
+            vars.Add("throwException", "false");
 
             // Act
 
@@ -232,7 +409,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             var definitionid = "invalid-definitionid:1:30";
             var vars = new Hashtable();
             vars.Add("duration", "long");
-            vars.Add("throwException", "true");
+            vars.Add("throwException", "false");
 
             // Act
             this._ProcessEngine.Login(username, password);
@@ -374,12 +551,18 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             ProcessInstanceResponseData instance = _ProcessEngine.GetWorkflowInstance(response.id);
             //ProcessVariableData variable = instance.variables.Where(v => v.name == expectedReturnVariable).FirstOrDefault();
 
+            bool cancelled = _ProcessEngine.DeleteWorkflowInstance(response.id);
+
+            // Assert
+
+
             // Assert
             Assert.IsNotNull(instance);
             Assert.IsNotNull(instance.completed);
             Assert.IsNotNull(instance.suspended);
             Assert.IsNotNull(instance.ended);
             Assert.IsFalse(instance.ended); // A failed workflow is not ended
+            Assert.IsTrue(cancelled);
         }
 
 
@@ -390,8 +573,8 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "short"); // short=10 seconds?
-            vars.Add("throwException", "true");
+            vars.Add("duration", "long"); // short=10 seconds?
+            vars.Add("throwException", "false");
             //string expectedReturnVariable = "returnVariableName from definitionid-workflow"; // TODO: Use a workflow which returns a result
             //string expectedReturnValue = "expected value"; // TODO: Expected value
 
@@ -426,7 +609,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
             vars.Add("duration", "short"); // short=10 seconds?
-            vars.Add("throwException", "true");
+            vars.Add("throwException", "false");
             //string expectedReturnVariable = "returnVariableName from definitionid-workflow"; // TODO: Use a workflow which returns a result
             //string expectedReturnValue = "expected value"; // TODO: Expected value
 
@@ -463,8 +646,8 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             ProcessInstanceResponseData instance = null;
             try
             {
-                 instance = _ProcessEngine.GetWorkflowInstance(unknownId);
-                 Assert.Fail("We should never reach this line...");
+                instance = _ProcessEngine.GetWorkflowInstance(unknownId);
+                Assert.Fail("We should never reach this line...");
             }
             catch (Exception ex)
             {
@@ -489,8 +672,8 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "short"); // short=10 seconds?
-            vars.Add("throwException", "true");
+            vars.Add("duration", "long"); // short=10 seconds, long=1 hour
+            vars.Add("throwException", "false");
 
             // Act
             this._ProcessEngine.Login(username, password);
@@ -515,8 +698,8 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "short"); // short=10 seconds?
-            vars.Add("throwException", "true");
+            vars.Add("duration", "long"); // short=10 seconds?
+            vars.Add("throwException", "false");
 
             // Act
             this._ProcessEngine.Login(username, password);
@@ -667,7 +850,19 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         {
             ProcessDefinitionsResponse definitions = this._ProcessEngine.GetWorkflowDefinitions();
 
-            return definitions.data.Where(d => d.key == definitionkey).FirstOrDefault().id;
+            ProcessDefinitionResponseData obj = definitions.data.Where(d => d.key == definitionkey).FirstOrDefault();
+            if (obj == null && definitionkey == DEFINITIONKEY_CREATETIMERSPROCESS)
+            {
+                // Deploy the unexisting process definition to make tests.
+                string filename = @"Resources\createTimersProcessUnitTests.bpmn20.xml";
+
+                byte[] bytes = File.ReadAllBytes(filename);
+                DeploymentResponseData response = this._ProcessEngine.CreateDeployment(filename, bytes);
+
+                definitions = this._ProcessEngine.GetWorkflowDefinitions();
+                obj = definitions.data.Where(d => d.key == definitionkey).FirstOrDefault();
+            }
+            return obj.id;
         }
 
         #endregion
