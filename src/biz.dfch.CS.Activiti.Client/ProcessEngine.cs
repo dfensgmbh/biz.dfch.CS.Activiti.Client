@@ -26,6 +26,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Web;
 using System.Net;
+using System.IO;
 
 namespace biz.dfch.CS.Activiti.Client
 {
@@ -132,6 +133,145 @@ namespace biz.dfch.CS.Activiti.Client
 
         #endregion Login and Logout end
 
+        #region Deployment(s)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetDeployments<T>()
+        {
+            var uri = string.Format("repository/deployments");
+            var response = _Client.Invoke(uri);
+
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
+            return result;
+        }
+
+        public object GetDeployments(Type type)
+        {
+            Contract.Requires(type != null);
+
+            var mi = this.GetType().GetMethods().Where(m => (m.Name == "GetDeployments" && m.IsGenericMethod)).First();
+            Contract.Assert(null != mi, "No generic method type found.");
+            var genericMethod = mi.MakeGenericMethod(type);
+            Contract.Assert(null != genericMethod, "Cannot create generic method.");
+
+            var result = genericMethod.Invoke(this, new object[] {/*parameters*/});
+            return result;
+        }
+
+        public object GetDeployments(object type)
+        {
+            Contract.Requires(type != null);
+
+            var mi = this.GetType().GetMethods().Where(m => (m.Name == "GetDeployments" && m.IsGenericMethod)).First();
+            Contract.Assert(null != mi, "No generic method type found.");
+            var genericMethod = mi.MakeGenericMethod(type.GetType());
+            Contract.Assert(null != genericMethod, "Cannot create generic method.");
+
+            var result = genericMethod.Invoke(this, new object[] {/*parameters*/});
+            return result;
+        }
+
+        public DeploymentResponse GetDeployments()
+        {
+            var result = GetDeployments<DeploymentResponse>();
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="deploymentId"></param>
+        /// <returns></returns>
+        public T GetDeployment<T>(string deploymentId)
+        {
+            Contract.Requires(deploymentId != null);
+
+            var uri = string.Format("repository/deployments/{0}", deploymentId);
+            var response = _Client.Invoke(uri);
+
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
+            return result;
+        }
+
+        public DeploymentResponseData GetDeployment(string deploymentId)
+        {
+            var result = GetDeployment<DeploymentResponseData>(deploymentId);
+            return result;
+        }
+
+        #endregion
+
+        #region CreateDeployment
+
+        private T CreateDeployment<T>(string filename, byte[] file)
+        {
+            Contract.Requires(file != null);
+
+            var uri = string.Format("repository/deployments");
+
+            var response = _Client.Upload(uri, file, "file", filename);
+            var result = (T)JsonConvert.DeserializeObject<T>(response.Result);
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename">HelloWorldProcess.bpmn20.xml</param>
+        /// <param name="file">Bytes of the bpmn20.xml-File</param>
+        /// <returns></returns>
+        public DeploymentResponseData CreateDeployment(string filename, byte[] file)
+        {
+            filename = Path.GetFileName(filename); // Just filename. Without path.
+
+            var result = CreateDeployment<DeploymentResponseData>(filename, file);
+            return result;
+        }
+
+        public DeploymentResponseData CreateDeployment(string filePath, string name)
+        {
+            Contract.Requires(!string.IsNullOrEmpty(filePath));
+            Contract.Requires(System.IO.File.Exists(filePath));
+
+            byte[] bytes = File.ReadAllBytes(filePath);
+
+            var result = CreateDeployment<DeploymentResponseData>(name, bytes);
+            return result;
+
+        }
+
+
+
+        #endregion
+
+        #region DeleteDeployment
+
+        public bool DeleteDeployment(string id)
+        {
+            Contract.Requires(id != null);
+
+            var uri = string.Format("repository/deployments/{0}", id);
+            try
+            {
+                var response = _Client.Invoke("DELETE", uri, null, null, null);
+                return response == string.Empty;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+        }
+
+
+
+        #endregion
+
         #region GetWorkflowDefinition(s)
 
         public T GetWorkflowDefinitions<T>()
@@ -209,7 +349,7 @@ namespace biz.dfch.CS.Activiti.Client
 
             var result = GetWorkflowDefinitions();
             return result.data.Where(d => d.key == key).FirstOrDefault();
-       }
+        }
 
         #endregion GetWorkflowDefinition(s) end
 
