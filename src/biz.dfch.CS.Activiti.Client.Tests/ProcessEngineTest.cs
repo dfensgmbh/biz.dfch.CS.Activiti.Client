@@ -58,6 +58,11 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         [TestCleanup]
         public void TestCleanup()
         {
+            if (!this._ProcessEngine.IsLoggedIn())
+            {
+                this._ProcessEngine.Login(username, password);
+            }
+
             DeploymentResponse deployments = this._ProcessEngine.GetDeployments();
 
             foreach (string f in Directory.GetFiles("Resources"))
@@ -68,6 +73,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
                 {
                     if (d != null)
                     {
+                        // If there are still running process instances, the deployment cannot be deleted.
                         bool deleted = this._ProcessEngine.DeleteDeployment(d.id);
                     }
                 }
@@ -351,15 +357,15 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
-            ProcessDefinitionsResponse definitions = this._ProcessEngine.GetWorkflowDefinitions();
-            ProcessDefinitionResponseData def1 = definitions.data.FirstOrDefault();
-            ProcessDefinitionResponseData def2 = this._ProcessEngine.GetWorkflowDefinitionByKey(def1.key);
+            string definitionId = GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
+
+            ProcessDefinitionResponseData definition = this._ProcessEngine.GetWorkflowDefinitionByKey(DEFINITIONKEY_CREATETIMERSPROCESS, true);
 
             // Assert
-            Assert.IsNotNull(def1);
-            Assert.IsNotNull(def2);
-            Assert.IsTrue(def1.key == def2.key);
+            Assert.IsNotNull(definition);
+            Assert.IsNotNull(definition.key==DEFINITIONKEY_CREATETIMERSPROCESS);
         }
+
 
         [TestMethod]
         [TestCategory("SkipOnTeamCity")]
@@ -843,15 +849,15 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         /// <summary>
         /// Returns the definitionid of a given definitionkey.
+        /// If definitionkey is DEFINITIONKEY_CREATETIMERSPROCESS and definition does not exist, the definition is deployed automatically.
         /// </summary>
         /// <param name="definitionkey">Something like createTimersProcess (see const  DEFINITIONKEY_CREATETIMERSPROCESS)</param>
         /// <returns> Something like "createTimersProcess:1:31" (version can change)</returns>
         private string GetDefinitionId(string definitionkey)
         {
-            ProcessDefinitionsResponse definitions = this._ProcessEngine.GetWorkflowDefinitions();
+            ProcessDefinitionResponseData definition = this._ProcessEngine.GetWorkflowDefinitionByKey(definitionkey, true);
 
-            ProcessDefinitionResponseData obj = definitions.data.Where(d => d.key == definitionkey).FirstOrDefault();
-            if (obj == null && definitionkey == DEFINITIONKEY_CREATETIMERSPROCESS)
+            if (definition == null && definitionkey == DEFINITIONKEY_CREATETIMERSPROCESS)
             {
                 // Deploy the unexisting process definition to make tests.
                 string filename = @"Resources\createTimersProcessUnitTests.bpmn20.xml";
@@ -859,10 +865,9 @@ namespace biz.dfch.CS.Activiti.Client.Tests
                 byte[] bytes = File.ReadAllBytes(filename);
                 DeploymentResponseData response = this._ProcessEngine.CreateDeployment(filename, bytes);
 
-                definitions = this._ProcessEngine.GetWorkflowDefinitions();
-                obj = definitions.data.Where(d => d.key == definitionkey).FirstOrDefault();
-            }
-            return obj.id;
+                definition = this._ProcessEngine.GetWorkflowDefinitionByKey(definitionkey, true);
+                }
+            return definition.id;
         }
 
         #endregion

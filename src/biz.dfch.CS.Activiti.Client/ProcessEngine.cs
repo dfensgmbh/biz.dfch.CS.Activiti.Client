@@ -343,12 +343,18 @@ namespace biz.dfch.CS.Activiti.Client
         /// </summary>
         /// <param name="key">createTimersProcess</param>
         /// <returns></returns>
-        public ProcessDefinitionResponseData GetWorkflowDefinitionByKey(string key)
+        public ProcessDefinitionResponseData GetWorkflowDefinitionByKey(string key, bool latest = false)
         {
             Contract.Requires(key != null);
 
-            var result = GetWorkflowDefinitions();
-            return result.data.Where(d => d.key == key).FirstOrDefault();
+            var uri = string.Format("repository/process-definitions");
+            Hashtable ht = _QueryParameters();
+            ht.Add("key", key);
+            if (latest) ht.Add("latest", "true");
+            var response = _Client.Invoke(uri, ht);
+
+            var result = (ProcessDefinitionsResponse)JsonConvert.DeserializeObject<ProcessDefinitionsResponse>(response);
+            return result.data.FirstOrDefault();
         }
 
         #endregion GetWorkflowDefinition(s) end
