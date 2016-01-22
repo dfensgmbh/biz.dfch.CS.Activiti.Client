@@ -35,6 +35,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         // This process definition is cerated in the unit tests if it does not exist and removed at the end.
         const string DEFINITIONKEY_CREATETIMERSPROCESS = "createTimersProcessUnitTests";
+        const string DEFINITIONKEY_EXCEPTIONAFTERDURATIONSPROCESS = "exceptionAfterDurationProcessUnitTests";
 
         const int WAIT_TIMEOUT_MILLISECONDS = 30000;
 
@@ -63,12 +64,15 @@ namespace biz.dfch.CS.Activiti.Client.Tests
                 this._ProcessEngine.Login(username, password);
             }
 
-            DeploymentResponse deployments = this._ProcessEngine.GetDeployments();
+
 
             foreach (string f in Directory.GetFiles("Resources"))
             {
                 string fileName = Path.GetFileName(f);
 
+                DeploymentResponse deployments = this._ProcessEngine.GetDeployments(fileName);
+
+                // Deployments löschen
                 foreach (DeploymentResponseData d in deployments.data.Where(d => d.name == fileName))
                 {
                     if (d != null)
@@ -359,11 +363,11 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
             string definitionId = GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
 
-            ProcessDefinitionResponseData definition = this._ProcessEngine.GetWorkflowDefinitionByKey(DEFINITIONKEY_CREATETIMERSPROCESS, true);
+            ProcessDefinitionResponseData definition = this._ProcessEngine.GetWorkflowDefinitionByKey(DEFINITIONKEY_CREATETIMERSPROCESS, true).data.FirstOrDefault();
 
             // Assert
             Assert.IsNotNull(definition);
-            Assert.IsNotNull(definition.key==DEFINITIONKEY_CREATETIMERSPROCESS);
+            Assert.IsNotNull(definition.key == DEFINITIONKEY_CREATETIMERSPROCESS);
         }
 
 
@@ -392,8 +396,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "long");
-            vars.Add("throwException", "false");
+            vars.Add("duration", "30000");
 
             // Act
 
@@ -430,14 +433,23 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         public void GetWorkflowStatus()
         {
             // Arrange
+            var definitionid = "will-be-determined-at-runtime";
+            var vars = new Hashtable();
+            vars.Add("duration", "30000");
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
+            definitionid = GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
+            var instanceNew = this._ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
+
             var instances = _ProcessEngine.GetWorkflowInstances();
             var id = instances.data[0].id;
             var instance = _ProcessEngine.GetWorkflowInstance(id);
+
+            bool cancelled = _ProcessEngine.DeleteWorkflowInstance(instance.id);
+
 
             // Assert
             Assert.IsNotNull(instance);
@@ -483,8 +495,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "short"); // short=10 seconds?
-            vars.Add("throwException", "false");
+            vars.Add("duration", "10000");
 
             // Act
             this._ProcessEngine.Login(username, password);
@@ -513,8 +524,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "short"); // short=10 seconds?
-            vars.Add("throwException", "false");
+            vars.Add("duration", "10000");
 
             // Act
             this._ProcessEngine.Login(username, password);
@@ -541,8 +551,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "short"); // short=10 seconds?
-            vars.Add("throwException", "true");
+            vars.Add("duration", "10");
             //string expectedReturnVariable = "returnVariableName from definitionid-workflow"; // TODO: Use a workflow which returns a result
             //string expectedReturnValue = "expected value"; // TODO: Expected value
 
@@ -550,7 +559,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_EXCEPTIONAFTERDURATIONSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
             System.Threading.Thread.Sleep(WAIT_TIMEOUT_MILLISECONDS);
@@ -579,8 +588,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "long"); // short=10 seconds?
-            vars.Add("throwException", "false");
+            vars.Add("duration", "30000");
             //string expectedReturnVariable = "returnVariableName from definitionid-workflow"; // TODO: Use a workflow which returns a result
             //string expectedReturnValue = "expected value"; // TODO: Expected value
 
@@ -614,8 +622,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "short"); // short=10 seconds?
-            vars.Add("throwException", "false");
+            vars.Add("duration", "30000");
             //string expectedReturnVariable = "returnVariableName from definitionid-workflow"; // TODO: Use a workflow which returns a result
             //string expectedReturnValue = "expected value"; // TODO: Expected value
 
@@ -678,8 +685,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "long"); // short=10 seconds, long=1 hour
-            vars.Add("throwException", "false");
+            vars.Add("duration", "60000");
 
             // Act
             this._ProcessEngine.Login(username, password);
@@ -704,8 +710,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "long"); // short=10 seconds?
-            vars.Add("throwException", "false");
+            vars.Add("duration", "10000");
 
             // Act
             this._ProcessEngine.Login(username, password);
@@ -734,8 +739,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "short"); // short=10 seconds?
-            vars.Add("throwException", "false");
+            vars.Add("duration", "10000");
 
             // Act
             this._ProcessEngine.Login(username, password);
@@ -763,14 +767,13 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "short"); // short=10 seconds?
-            vars.Add("throwException", "true");
+            vars.Add("duration", "10");
 
             // Act
             this._ProcessEngine.Login(username, password);
             Assert.IsTrue(this._ProcessEngine.IsLoggedIn());
 
-            definitionid = this.GetDefinitionId(DEFINITIONKEY_CREATETIMERSPROCESS);
+            definitionid = this.GetDefinitionId(DEFINITIONKEY_EXCEPTIONAFTERDURATIONSPROCESS);
 
             ProcessInstanceResponseData response = _ProcessEngine.InvokeWorkflowInstance(definitionid, vars);
 
@@ -794,8 +797,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             // Arrange
             var definitionid = "will-be-determined-at-runtime";
             var vars = new Hashtable();
-            vars.Add("duration", "short"); // short=10 seconds?
-            vars.Add("throwException", "false");
+            vars.Add("duration", "10000");
 
             // Act
             this._ProcessEngine.Login(username, password);
@@ -855,7 +857,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         /// <returns> Something like "createTimersProcess:1:31" (version can change)</returns>
         private string GetDefinitionId(string definitionkey)
         {
-            ProcessDefinitionResponseData definition = this._ProcessEngine.GetWorkflowDefinitionByKey(definitionkey, true);
+            ProcessDefinitionResponseData definition = this._ProcessEngine.GetWorkflowDefinitionByKey(definitionkey, true).data.FirstOrDefault();
 
             if (definition == null && definitionkey == DEFINITIONKEY_CREATETIMERSPROCESS)
             {
@@ -865,8 +867,31 @@ namespace biz.dfch.CS.Activiti.Client.Tests
                 byte[] bytes = File.ReadAllBytes(filename);
                 DeploymentResponseData response = this._ProcessEngine.CreateDeployment(filename, bytes);
 
-                definition = this._ProcessEngine.GetWorkflowDefinitionByKey(definitionkey, true);
-                }
+                definition = this._ProcessEngine.GetWorkflowDefinitionByKey(definitionkey, true).data.FirstOrDefault();
+            }
+
+            if (definition == null && definitionkey == DEFINITIONKEY_CREATETIMERSPROCESS)
+            {
+                // Deploy the unexisting process definition to make tests.
+                string filename = @"Resources\createTimersProcessUnitTests4.bpmn20.xml";
+
+                byte[] bytes = File.ReadAllBytes(filename);
+                DeploymentResponseData response = this._ProcessEngine.CreateDeployment(filename, bytes);
+
+                definition = this._ProcessEngine.GetWorkflowDefinitionByKey(definitionkey, true).data.FirstOrDefault();
+            }
+
+            if (definition == null && definitionkey == DEFINITIONKEY_EXCEPTIONAFTERDURATIONSPROCESS)
+            {
+                // Deploy the unexisting process definition to make tests.
+                string filename = @"Resources\exceptionAfterDurationProcessUnitTests.bpmn20.xml";
+
+                byte[] bytes = File.ReadAllBytes(filename);
+                DeploymentResponseData response = this._ProcessEngine.CreateDeployment(filename, bytes);
+
+                definition = this._ProcessEngine.GetWorkflowDefinitionByKey(definitionkey, true).data.FirstOrDefault();
+            }
+
             return definition.id;
         }
 

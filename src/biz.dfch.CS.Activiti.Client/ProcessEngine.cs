@@ -140,16 +140,18 @@ namespace biz.dfch.CS.Activiti.Client
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetDeployments<T>()
+        public T GetDeployments<T>(string name = "")
         {
             var uri = string.Format("repository/deployments");
-            var response = _Client.Invoke(uri);
+            Hashtable ht = _QueryParameters();
+            if (!string.IsNullOrEmpty(name)) ht.Add("name", name);
+            var response = _Client.Invoke(uri, ht);
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
         }
 
-        public object GetDeployments(Type type)
+        public object GetDeployments(Type type, string name = "")
         {
             Contract.Requires(type != null);
 
@@ -158,11 +160,11 @@ namespace biz.dfch.CS.Activiti.Client
             var genericMethod = mi.MakeGenericMethod(type);
             Contract.Assert(null != genericMethod, "Cannot create generic method.");
 
-            var result = genericMethod.Invoke(this, new object[] {/*parameters*/});
+            var result = genericMethod.Invoke(this, new object[] {/*parameters*/ name });
             return result;
         }
 
-        public object GetDeployments(object type)
+        public object GetDeployments(object type, string name = "")
         {
             Contract.Requires(type != null);
 
@@ -171,13 +173,13 @@ namespace biz.dfch.CS.Activiti.Client
             var genericMethod = mi.MakeGenericMethod(type.GetType());
             Contract.Assert(null != genericMethod, "Cannot create generic method.");
 
-            var result = genericMethod.Invoke(this, new object[] {/*parameters*/});
+            var result = genericMethod.Invoke(this, new object[] {/*parameters*/ name });
             return result;
         }
 
-        public DeploymentResponse GetDeployments()
+        public DeploymentResponse GetDeployments(string name = "")
         {
-            var result = GetDeployments<DeploymentResponse>();
+            var result = GetDeployments<DeploymentResponse>(name);
             return result;
         }
 
@@ -263,6 +265,8 @@ namespace biz.dfch.CS.Activiti.Client
             }
             catch (Exception e)
             {
+                // If there are still running process instances on this deployment, it cannot be deleted. In Fiddler you ca see the following error:
+                // {"message":"Internal server error","exception":"\n### Error updating database.  Cause: org.postgresql.util.PSQLException: ERROR: update or delete on table \"act_re_procdef\" violates foreign key constraint \"act_fk_exe_procdef\" on table \"act_ru_execution\"\n  Detail: Key (id_)=(exceptionAfterDurationProcessUnitTests:1:216775) is still referenced from table \"act_ru_execution\".\n### The error may involve org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity.deleteProcessDefinitionsByDeploymentId-Inline\n### The error occurred while setting parameters\n### SQL: delete from ACT_RE_PROCDEF where DEPLOYMENT_ID_ = ?\n### Cause: org.postgresql.util.PSQLException: ERROR: update or delete on table \"act_re_procdef\" violates foreign key constraint \"act_fk_exe_procdef\" on table \"act_ru_execution\"\n  Detail: Key (id_)=(exceptionAfterDurationProcessUnitTests:1:216775) is still referenced from table \"act_ru_execution\"."}
                 return false;
             }
 
@@ -343,7 +347,7 @@ namespace biz.dfch.CS.Activiti.Client
         /// </summary>
         /// <param name="key">createTimersProcess</param>
         /// <returns></returns>
-        public ProcessDefinitionResponseData GetWorkflowDefinitionByKey(string key, bool latest = false)
+        public ProcessDefinitionsResponse GetWorkflowDefinitionByKey(string key, bool latest = false)
         {
             Contract.Requires(key != null);
 
@@ -354,7 +358,7 @@ namespace biz.dfch.CS.Activiti.Client
             var response = _Client.Invoke(uri, ht);
 
             var result = (ProcessDefinitionsResponse)JsonConvert.DeserializeObject<ProcessDefinitionsResponse>(response);
-            return result.data.FirstOrDefault();
+            return result;
         }
 
         #endregion GetWorkflowDefinition(s) end

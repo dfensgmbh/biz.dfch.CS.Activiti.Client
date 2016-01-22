@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   targetNamespace="Examples">
 
-  <process id="createTimersProcessUnitTests" name="Create timers process unit tests">
+  <process id="exceptionAfterDurationProcessUnitTests" name="Create timers process unit tests who throws an exception after duration">
     <documentation>Test process to create a number of timers.</documentation>
     <startEvent id="theStart">
       <extensionElements>
@@ -14,12 +14,13 @@
     <sequenceFlow id="flow1" sourceRef="theStart" targetRef="theEnd" />
 
     <sequenceFlow id="flow2" sourceRef="theStart" targetRef="timer" />
-
+    
     <scriptTask activiti:async="true" id="timer" name="Execute script" scriptFormat="groovy">
       <script>
         System.out.println("Started...")
         sleep(duration.toLong())
-        System.out.println("Ended...")
+        System.out.println("Ended and throw Exception...")
+        throw new java.lang.RuntimeException('Unit tests: exceptionAfterDurationProcessUnitTests throwed an excetion! (This is not an error, just a test. See CS.Activiti.Client.Tests)');
       </script>
     </scriptTask>
 
@@ -30,3 +31,4 @@
   </process>
 
 </definitions>
+
