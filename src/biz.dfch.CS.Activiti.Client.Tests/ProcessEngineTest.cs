@@ -57,6 +57,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         }
 
         [TestCleanup]
+        [TestCategory("SkipOnTeamCity")]
         public void TestCleanup()
         {
             if (!this._ProcessEngine.IsLoggedIn())
