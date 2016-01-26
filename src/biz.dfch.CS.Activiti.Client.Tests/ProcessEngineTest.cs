@@ -851,7 +851,7 @@ namespace biz.dfch.CS.Activiti.Client.Tests
 
         /// <summary>
         /// Returns the definitionid of a given definitionkey.
-        /// If definitionkey is DEFINITIONKEY_CREATETIMERSPROCESS and definition does not exist, the definition is deployed automatically.
+        /// If definitionkey is DEFINITIONKEY_CREATETIMERSPROCESS or DEFINITIONKEY_EXCEPTIONAFTERDURATIONSPROCESS and definition does not exist, the definition is deployed automatically.
         /// </summary>
         /// <param name="definitionkey">Something like createTimersProcess (see const  DEFINITIONKEY_CREATETIMERSPROCESS)</param>
         /// <returns> Something like "createTimersProcess:1:31" (version can change)</returns>
@@ -863,17 +863,6 @@ namespace biz.dfch.CS.Activiti.Client.Tests
             {
                 // Deploy the unexisting process definition to make tests.
                 string filename = @"Resources\createTimersProcessUnitTests.bpmn20.xml";
-
-                byte[] bytes = File.ReadAllBytes(filename);
-                DeploymentResponseData response = this._ProcessEngine.CreateDeployment(filename, bytes);
-
-                definition = this._ProcessEngine.GetWorkflowDefinitionByKey(definitionkey, true).data.FirstOrDefault();
-            }
-
-            if (definition == null && definitionkey == DEFINITIONKEY_CREATETIMERSPROCESS)
-            {
-                // Deploy the unexisting process definition to make tests.
-                string filename = @"Resources\createTimersProcessUnitTests4.bpmn20.xml";
 
                 byte[] bytes = File.ReadAllBytes(filename);
                 DeploymentResponseData response = this._ProcessEngine.CreateDeployment(filename, bytes);
