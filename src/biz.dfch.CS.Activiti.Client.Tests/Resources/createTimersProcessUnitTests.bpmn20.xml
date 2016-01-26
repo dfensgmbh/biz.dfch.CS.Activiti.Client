@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  targetNamespace="Examples">
+
+  <process id="createTimersProcessUnitTests" name="Create timers process unit tests">
+    <documentation>Test process to create a number of timers.</documentation>
+    <startEvent id="theStart">
+      <extensionElements>
+        <activiti:formProperty id="duration" type="long" required="true"/>
+      </extensionElements>
+    </startEvent>
+
+    <sequenceFlow id="flow1" sourceRef="theStart" targetRef="theEnd" />
+
+    <sequenceFlow id="flow2" sourceRef="theStart" targetRef="timer" />
+
+    <scriptTask activiti:async="true" id="timer" name="Execute script" scriptFormat="groovy">
+      <script>
+        System.out.println("Started...")
+        sleep(duration.toLong())
+        System.out.println("Ended...")
+      </script>
+    </scriptTask>
+
+    <sequenceFlow id="flow3" sourceRef="timer" targetRef="theEnd" />
+
+    <endEvent id="theEnd" />
+
+  </process>
+
+</definitions>

@@ -115,7 +115,7 @@ namespace biz.dfch.CS.Activiti.Client
             return default(ProcessInstancesResponse);
         }
 
-        public T GetWorkflowInstanceVariables<T>(string id)
+        public T GetWorkflowInstanceVariables<T>(string id, bool completed)
         {
             Contract.Requires(!string.IsNullOrEmpty(id));
             return default(T);

@@ -28,6 +28,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Web;
+using System.Globalization;
+using System.IO;
 
 namespace biz.dfch.CS.Activiti.Client
 {
@@ -44,8 +46,8 @@ namespace biz.dfch.CS.Activiti.Client
         public string Username { get; set; }
 
         private string _password;
-        public string Password 
-        { 
+        public string Password
+        {
             set
             {
                 _password = value;
@@ -114,7 +116,7 @@ namespace biz.dfch.CS.Activiti.Client
         {
             Contract.Requires(null != server);
 
-            this.UriServer = server;            
+            this.UriServer = server;
         }
 
         public RestClient(Uri server, string username, string password)
@@ -273,6 +275,72 @@ namespace biz.dfch.CS.Activiti.Client
             return this.Invoke(HttpMethod.Get.ToString(), uri, null, null, null);
         }
         #endregion
+
+        public async Task<string> Upload(string uri, byte[] image, string name, string filename)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    char[] achTrim = { '/' };
+                    var s = String.Format("{0}/", _UriServer.AbsoluteUri.TrimEnd(achTrim));
+                    client.BaseAddress = new Uri(s);
+                    client.Timeout = new TimeSpan(0, 0, _TimeoutSec);
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_ContentType));
+                    client.DefaultRequestHeaders.Add("Authorization", String.Format(RestClient.AUTHORIZATIONHEADERFORMAT, _CredentialBase64));
+                    client.DefaultRequestHeaders.Add("User-Agent", RestClient.USERAGENT);
+
+                    using (var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture)))
+                    {
+                        content.Add(new StreamContent(new MemoryStream(image)), name, filename);
+
+                        using (var response = await client.PostAsync(uri, content))
+                        {
+                            var input = await response.Content.ReadAsStringAsync();
+
+                            if (response.StatusCode.Equals(HttpStatusCode.Unauthorized))
+                            {
+                                throw new UnauthorizedAccessException(String.Format("Invoking '{0}' with username '{1}' FAILED.", uri, _Credential.UserName));
+                            }
+                            if (response.StatusCode.Equals(HttpStatusCode.BadRequest))
+                            {
+                                var message = String.Empty;
+                                var contentError = response.Content.ReadAsStringAsync().Result;
+                                try
+                                {
+                                    JToken jv = JObject.Parse(contentError);
+                                    var messageError = jv.SelectToken("Error", true).ToString();
+                                    var messageCode = jv.SelectToken("code", true).ToString();
+                                    var messageText = jv.SelectToken("text", true).ToString();
+                                    message = String.Format("{0}\r\nCode: {1}\r\nText: {2}", messageError, messageCode, messageText);
+                                }
+                                catch
+                                {
+                                    message = contentError;
+                                }
+                                throw new ArgumentException(message);
+                            }
+                            response.EnsureSuccessStatusCode();
+
+                            Debug.WriteLine(String.Format("response '{0}'", response.ToString()));
+                            var c = response.Content.ReadAsStringAsync().Result;
+                            Debug.WriteLine(String.Format("content '{0}'", c.ToString()));
+
+                            return c;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
+
+
+
+        }
 
     }
 }

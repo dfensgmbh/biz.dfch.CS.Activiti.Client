@@ -26,6 +26,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Web;
 using System.Net;
+using System.IO;
 
 namespace biz.dfch.CS.Activiti.Client
 {
@@ -132,6 +133,149 @@ namespace biz.dfch.CS.Activiti.Client
 
         #endregion Login and Logout end
 
+        #region Deployment(s)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetDeployments<T>(string name = "")
+        {
+            var uri = string.Format("repository/deployments");
+            Hashtable ht = _QueryParameters();
+            if (!string.IsNullOrEmpty(name)) ht.Add("name", name);
+            var response = _Client.Invoke(uri, ht);
+
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
+            return result;
+        }
+
+        public object GetDeployments(Type type, string name = "")
+        {
+            Contract.Requires(type != null);
+
+            var mi = this.GetType().GetMethods().Where(m => (m.Name == "GetDeployments" && m.IsGenericMethod)).First();
+            Contract.Assert(null != mi, "No generic method type found.");
+            var genericMethod = mi.MakeGenericMethod(type);
+            Contract.Assert(null != genericMethod, "Cannot create generic method.");
+
+            var result = genericMethod.Invoke(this, new object[] {/*parameters*/ name });
+            return result;
+        }
+
+        public object GetDeployments(object type, string name = "")
+        {
+            Contract.Requires(type != null);
+
+            var mi = this.GetType().GetMethods().Where(m => (m.Name == "GetDeployments" && m.IsGenericMethod)).First();
+            Contract.Assert(null != mi, "No generic method type found.");
+            var genericMethod = mi.MakeGenericMethod(type.GetType());
+            Contract.Assert(null != genericMethod, "Cannot create generic method.");
+
+            var result = genericMethod.Invoke(this, new object[] {/*parameters*/ name });
+            return result;
+        }
+
+        public DeploymentResponse GetDeployments(string name = "")
+        {
+            var result = GetDeployments<DeploymentResponse>(name);
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="deploymentId"></param>
+        /// <returns></returns>
+        public T GetDeployment<T>(string deploymentId)
+        {
+            Contract.Requires(deploymentId != null);
+
+            var uri = string.Format("repository/deployments/{0}", deploymentId);
+            var response = _Client.Invoke(uri);
+
+            var result = (T)JsonConvert.DeserializeObject<T>(response);
+            return result;
+        }
+
+        public DeploymentResponseData GetDeployment(string deploymentId)
+        {
+            var result = GetDeployment<DeploymentResponseData>(deploymentId);
+            return result;
+        }
+
+        #endregion
+
+        #region CreateDeployment
+
+        private T CreateDeployment<T>(string filename, byte[] file)
+        {
+            Contract.Requires(file != null);
+
+            var uri = string.Format("repository/deployments");
+
+            var response = _Client.Upload(uri, file, "file", filename);
+            var result = (T)JsonConvert.DeserializeObject<T>(response.Result);
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename">HelloWorldProcess.bpmn20.xml</param>
+        /// <param name="file">Bytes of the bpmn20.xml-File</param>
+        /// <returns></returns>
+        public DeploymentResponseData CreateDeployment(string filename, byte[] file)
+        {
+            filename = Path.GetFileName(filename); // Just filename. Without path.
+
+            var result = CreateDeployment<DeploymentResponseData>(filename, file);
+            return result;
+        }
+
+        public DeploymentResponseData CreateDeployment(string filePath, string name)
+        {
+            Contract.Requires(!string.IsNullOrEmpty(filePath));
+            Contract.Requires(System.IO.File.Exists(filePath));
+
+            byte[] bytes = File.ReadAllBytes(filePath);
+
+            var result = CreateDeployment<DeploymentResponseData>(name, bytes);
+            return result;
+
+        }
+
+
+
+        #endregion
+
+        #region DeleteDeployment
+
+        public bool DeleteDeployment(string id)
+        {
+            Contract.Requires(id != null);
+
+            var uri = string.Format("repository/deployments/{0}", id);
+            try
+            {
+                var response = _Client.Invoke("DELETE", uri, null, null, null);
+                return response == string.Empty;
+            }
+            catch (Exception e)
+            {
+                // If there are still running process instances on this deployment, it cannot be deleted. In Fiddler you ca see the following error:
+                // {"message":"Internal server error","exception":"\n### Error updating database.  Cause: org.postgresql.util.PSQLException: ERROR: update or delete on table \"act_re_procdef\" violates foreign key constraint \"act_fk_exe_procdef\" on table \"act_ru_execution\"\n  Detail: Key (id_)=(exceptionAfterDurationProcessUnitTests:1:216775) is still referenced from table \"act_ru_execution\".\n### The error may involve org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity.deleteProcessDefinitionsByDeploymentId-Inline\n### The error occurred while setting parameters\n### SQL: delete from ACT_RE_PROCDEF where DEPLOYMENT_ID_ = ?\n### Cause: org.postgresql.util.PSQLException: ERROR: update or delete on table \"act_re_procdef\" violates foreign key constraint \"act_fk_exe_procdef\" on table \"act_ru_execution\"\n  Detail: Key (id_)=(exceptionAfterDurationProcessUnitTests:1:216775) is still referenced from table \"act_ru_execution\"."}
+                return false;
+            }
+
+        }
+
+
+
+        #endregion
+
         #region GetWorkflowDefinition(s)
 
         public T GetWorkflowDefinitions<T>()
@@ -203,13 +347,19 @@ namespace biz.dfch.CS.Activiti.Client
         /// </summary>
         /// <param name="key">createTimersProcess</param>
         /// <returns></returns>
-        public ProcessDefinitionResponseData GetWorkflowDefinitionByKey(string key)
+        public ProcessDefinitionsResponse GetWorkflowDefinitionByKey(string key, bool latest = false)
         {
             Contract.Requires(key != null);
 
-            var result = GetWorkflowDefinitions();
-            return result.data.Where(d => d.key == key).FirstOrDefault();
-       }
+            var uri = string.Format("repository/process-definitions");
+            Hashtable ht = _QueryParameters();
+            ht.Add("key", key);
+            if (latest) ht.Add("latest", "true");
+            var response = _Client.Invoke(uri, ht);
+
+            var result = (ProcessDefinitionsResponse)JsonConvert.DeserializeObject<ProcessDefinitionsResponse>(response);
+            return result;
+        }
 
         #endregion GetWorkflowDefinition(s) end
 
@@ -297,12 +447,13 @@ namespace biz.dfch.CS.Activiti.Client
             return result;
         }
 
-        public T GetWorkflowInstanceVariables<T>(string id)
+        public T GetWorkflowInstanceVariables<T>(string id, bool completed)
         {
             Contract.Requires(id != null);
 
-            var uri = string.Format("runtime/process-instances/{0}/variables", id);
-            var response = _Client.Invoke(uri, _QueryParameters());
+            var uri = completed ? string.Format("history/historic-variable-instances?processInstanceId={0}", id) : string.Format("runtime/process-instances/{0}/variables", id);
+            var response = _Client.Invoke(uri);
+            //var response = _Client.Invoke(uri, _QueryParameters());
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
@@ -340,11 +491,9 @@ namespace biz.dfch.CS.Activiti.Client
         public ProcessInstanceResponseIndepthData GetWorkflowInstance(string id, bool indepth)
         {
             ProcessInstanceResponseIndepthData result;
-            string uriBase;
             try
             {
                 result = GetWorkflowInstance<ProcessInstanceResponseIndepthData>(id, false);
-                uriBase = "runtime";
             }
             catch (Exception)
             {
@@ -352,14 +501,25 @@ namespace biz.dfch.CS.Activiti.Client
                 result.completed = true;
                 result.ended = true;
                 result.suspended = false;
-                uriBase = "history/historic-process-instances";
+                ProcessHistoricVariableInstancesResponse historicVariableInstances = GetWorkflowInstanceVariables<ProcessHistoricVariableInstancesResponse>(id, true);
+                var variables = new List<ProcessVariableData>();
+                foreach (ProcessHistoricInstancesResponse historicVariableInstance in historicVariableInstances.data)
+                {
+                    variables.Add(new ProcessVariableData()
+                    {
+                        name = historicVariableInstance.variable.name.ToString(),
+                        value = historicVariableInstance.variable.value.ToString()
+                    }
+                    );
+                }
+                result.variables = variables;
                 indepth = false;
             }
 
             if (indepth == true)
             {
                 // get variables
-                result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
+                result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id, false);
                 // get executions
                 var executions = GetWorkflowIndepth<ProcessExecutionsResponse>(id, biz.dfch.CS.Activiti.Client.ProcessEngine.EnumIndepth.Executions);
                 result.executions = executions.data;
@@ -450,7 +610,7 @@ namespace biz.dfch.CS.Activiti.Client
         public ProcessInstanceResponseData UpdateWorkflowInstance(string id, EnumStatus status)
         {
             var result = UpdateWorkflowInstance<ProcessInstanceResponseData>(id, status);
-            result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id);
+            result.variables = GetWorkflowInstanceVariables<List<ProcessVariableData>>(id, false);
             return result;
         }
 

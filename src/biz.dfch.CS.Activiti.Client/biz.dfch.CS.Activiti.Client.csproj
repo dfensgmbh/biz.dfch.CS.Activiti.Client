@@ -135,6 +135,8 @@
   <ItemGroup>
     <Compile Include="ContractClassForIBPMService.cs" />
     <Compile Include="IBPMService.cs" />
+    <Compile Include="DeploymentsResponse.cs" />
+    <Compile Include="DeploymentResponseData.cs" />
     <Compile Include="ProcessInstanceRequestTenantData.cs" />
     <Compile Include="ProcessTaskResponseData.cs" />
     <Compile Include="ProcessTasksResponse.cs" />
@@ -145,6 +147,7 @@
     <Compile Include="ProcessInstanceRequestData.cs" />
     <Compile Include="ProcessInstanceResponseIndepthData.cs" />
     <Compile Include="ProcessInstanceResponseData.cs" />
+    <Compile Include="ProcessHistoricVariableInstancesResponse.cs" />
     <Compile Include="ProcessVariableData.cs" />
     <Compile Include="ProcessInstancesResponse.cs" />
     <Compile Include="ProcessEngine.cs" />
