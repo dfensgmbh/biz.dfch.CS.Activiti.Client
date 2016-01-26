@@ -57,7 +57,6 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         }
 
         [TestCleanup]
-        [TestCategory("SkipOnTeamCity")]
         public void TestCleanup()
         {
             if (!this._ProcessEngine.IsLoggedIn())
@@ -839,12 +838,6 @@ namespace biz.dfch.CS.Activiti.Client.Tests
         }
 
         #endregion
-
-        [TestMethod]
-        public void TestMethod()
-        {
-            // There has to be at least one test without annotation '[TestCategory("SkipOnTeamCity")]' per project
-        }
 
         #endregion
 
