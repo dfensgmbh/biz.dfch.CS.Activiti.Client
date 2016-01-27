@@ -50,9 +50,9 @@ namespace biz.dfch.CS.Activiti.Client
 
         ProcessInstanceResponseData InvokeWorkflowInstance(string definitionId, Hashtable variablesHt, string tenantId);
 
-        T GetWorkflowInstances<T>();
+        T GetWorkflowInstances<T>(Hashtable queryParameters = null);
 
-        ProcessInstancesResponse GetWorkflowInstances();
+        ProcessInstancesResponse GetWorkflowInstances(Hashtable queryParameters = null);
 
         T GetWorkflowInstanceVariables<T>(string id, bool completed);
 

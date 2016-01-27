@@ -141,17 +141,7 @@ namespace biz.dfch.CS.Activiti.Client
         #endregion
 
         #region Invoke
-        public String Invoke(
-            String method
-            ,
-            String uri
-            ,
-            Hashtable queryParameters
-            ,
-            Hashtable headers
-            ,
-            String body
-            )
+        public String Invoke(String method, String uri, Hashtable queryParameters, Hashtable headers, String body)
         {
             // Parameter validation
             if (String.IsNullOrWhiteSpace(method)) throw new ArgumentException(String.Format("Method: Parameter validation FAILED. Parameter cannot be null or empty."), "Method");
@@ -259,18 +249,12 @@ namespace biz.dfch.CS.Activiti.Client
             }
         }
 
-        public String Invoke(
-            String uri
-            ,
-            Hashtable queryParameters
-            )
+        public String Invoke(String uri, Hashtable queryParameters)
         {
             return this.Invoke(HttpMethod.Get.ToString(), uri, queryParameters, null, null);
         }
 
-        public String Invoke(
-            String uri
-            )
+        public String Invoke(String uri)
         {
             return this.Invoke(HttpMethod.Get.ToString(), uri, null, null, null);
         }
