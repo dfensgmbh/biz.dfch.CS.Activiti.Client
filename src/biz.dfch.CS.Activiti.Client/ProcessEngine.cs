@@ -432,18 +432,32 @@ namespace biz.dfch.CS.Activiti.Client
 
         #region GetWorkflowInstance(s)
 
-        public T GetWorkflowInstances<T>()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameters">Ad</param>
+        /// <returns></returns>
+        public T GetWorkflowInstances<T>(Hashtable queryParameters = null)
         {
             var uri = string.Format("runtime/process-instances");
-            var response = _Client.Invoke(uri, _QueryParameters());
+            if (queryParameters != null)
+            {
+                foreach (DictionaryEntry item in _QueryParameters())
+                {
+                    queryParameters[item.Key] = item.Value;
+                }
+            }
+
+            var response = _Client.Invoke(uri, queryParameters);
 
             var result = (T)JsonConvert.DeserializeObject<T>(response);
             return result;
         }
 
-        public ProcessInstancesResponse GetWorkflowInstances()
+        public ProcessInstancesResponse GetWorkflowInstances(Hashtable queryParameters = null)
         {
-            var result = GetWorkflowInstances<ProcessInstancesResponse>();
+            var result = GetWorkflowInstances<ProcessInstancesResponse>(queryParameters);
             return result;
         }
 

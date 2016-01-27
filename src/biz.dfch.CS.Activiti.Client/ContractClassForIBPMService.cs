@@ -105,12 +105,12 @@ namespace biz.dfch.CS.Activiti.Client
             return default(ProcessInstanceResponseData);
         }
 
-        public T GetWorkflowInstances<T>()
+        public T GetWorkflowInstances<T>(Hashtable queryParameters = null)
         {
             return default(T);
         }
 
-        public ProcessInstancesResponse GetWorkflowInstances()
+        public ProcessInstancesResponse GetWorkflowInstances(Hashtable queryParameters = null)
         {
             return default(ProcessInstancesResponse);
         }
