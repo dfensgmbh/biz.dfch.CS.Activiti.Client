@@ -19,4 +19,5 @@ You can download the latest version of Activiti as a [ZIP file](http://activiti.
 
 
 [![TeamCity Logo](https://github.com/dfensgmbh/biz.dfch.CS.Activiti.Client/blob/develop/TeamCity.png)](https://www.jetbrains.com/teamcity/)
+
 Built and released with TeamCity
