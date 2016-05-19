@@ -3,9 +3,6 @@
 [![License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/dfensgmbh/biz.dfch.CS.Activiti.Client/blob/master/LICENSE)
 [![Version](https://img.shields.io/nuget/v/biz.dfch.CS.Activiti.Client.svg)](https://www.nuget.org/packages/biz.dfch.CS.Activiti.Client/)
 
-[![TeamCity Logo](https://github.com/dfensgmbh/biz.dfch.CS.Activiti.Client/blob/develop/TeamCity.png)](https://www.jetbrains.com/teamcity/)
-Built and released with TeamCity
-
 A C#/.NET client for the [Activiti Workflow Engine](http://activiti.org/).
 
 d-fens GmbH, General-Guisan-Strasse 6, CH-6300 Zug, Switzerland
@@ -19,3 +16,7 @@ d-fens GmbH, General-Guisan-Strasse 6, CH-6300 Zug, Switzerland
 ## Activiti
 
 You can download the latest version of Activiti as a [ZIP file](http://activiti.org/download.html) or as pre-built [Docker image](https://hub.docker.com/r/eternnoir/activiti/) (which might not be the latest version, for details see [here](https://github.com/eternnoir/activiti)).
+
+
+[![TeamCity Logo](https://github.com/dfensgmbh/biz.dfch.CS.Activiti.Client/blob/develop/TeamCity.png)](https://www.jetbrains.com/teamcity/)
+Built and released with TeamCity
