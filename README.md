@@ -1,8 +1,10 @@
 # biz.dfch.CS.Activiti.Client
 [![Build Status](https://build.dfch.biz/app/rest/builds/buildType:(id:CSharpDotNet_BizDfchCsActivitiClient_Build)/statusIcon)](https://build.dfch.biz/project.html?projectId=CSharpDotNet_BizDfchCsActivitiClient&tab=projectOverview)
 [![License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/dfensgmbh/biz.dfch.CS.Activiti.Client/blob/master/LICENSE)
-[![NuGet downloads](https://img.shields.io/nuget/dt/biz.dfch.CS.Activiti.Client.svg)](https://www.nuget.org/packages/biz.dfch.CS.Activiti.Client/)
 [![Version](https://img.shields.io/nuget/v/biz.dfch.CS.Activiti.Client.svg)](https://www.nuget.org/packages/biz.dfch.CS.Activiti.Client/)
+
+[![TeamCity Logo](https://github.com/dfensgmbh/biz.dfch.CS.Activiti.Client/blob/develop/TeamCity.png)](https://www.jetbrains.com/teamcity/)
+Built and released with TeamCity
 
 A C#/.NET client for the [Activiti Workflow Engine](http://activiti.org/).
 
